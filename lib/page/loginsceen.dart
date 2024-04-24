@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:incomeandexpansesapp/DMstatic.dart';
 import 'package:incomeandexpansesapp/colors.dart';
 import 'package:incomeandexpansesapp/font.dart';
+import 'package:incomeandexpansesapp/page/addtopicpage.dart';
 import 'package:incomeandexpansesapp/page/homepagescreen.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -152,7 +153,7 @@ class LoginScreen extends StatelessWidget {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => HomepageScreen()));
+                                      builder: (context) => AddTopicPage()));
                             },
                             child: Container(
                               margin: EdgeInsets.only(

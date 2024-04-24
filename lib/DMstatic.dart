@@ -55,6 +55,7 @@ const double H270 = 0.338;
 const double H280 = 0.35;
 //*300
 const double H300 = 0.376;
+const double H320 = 0.401;
 const double H350 = 0.439;
 //*400
 const double H400 = 0.501;
@@ -69,12 +70,17 @@ const double H580 = 0.727;
 const double H600 = 0.752;
 const double H630 = 0.790;
 const double H650 = 0.815;
+const double H670 = 0.8399;
+const double H680 = 0.852;
+const double H685 = 0.859;
+const double H690 = 0.865;
 const double H695 = 0.871;
 const double H720 = 0.903;
 const double H750 = 0.940;
 
 //Width 411.4185
 const double W2 = 0.005;
+const double W3 = 0.007;
 const double W5 = 0.012;
 const double W6 = 0.016;
 const double W7 = 0.017;
@@ -92,13 +98,18 @@ const double W60 = 0.146;
 const double W70 = 0.170;
 const double W80 = 0.194;
 const double W90 = 0.219;
+const double W100 = 0.243;
 const double W110 = 0.267;
 const double W120 = 0.292;
 const double W130 = 0.316;
 const double W132 = 0.321;
 const double W160 = 0.389;
+const double W170 = 0.413;
+const double W180 = 0.438;
+const double W190 = 0.462;
 const double W200 = 0.486;
 const double W230 = 0.559;
+const double W240 = 0.580;
 const double W250 = 0.608;
 const double W270 = 0.656;
 const double W275 = 0.668;

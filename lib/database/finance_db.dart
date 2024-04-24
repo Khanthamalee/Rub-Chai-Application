@@ -42,6 +42,7 @@ class FinanceDB {
 
     //เอาข้อมูลจาก form Alertdialog มาจัดเรียงเป็น แล้วเก็บไว้ในตัวแปร KeyID
     var KeyID = store.add(db, {
+      "topic": data.topic.toString(),
       "datetime": data.datetime.toString(),
       "timeStamp": data.timeStamp.toString(),
       "type": data.type,
@@ -51,6 +52,26 @@ class FinanceDB {
     });
     db.close();
     return KeyID;
+  }
+
+  //update data
+  Future UpdateData(int dataId, FinanceVariable data) async {
+    //เรียกฐานข้อมูล
+    var db = await this.openDatabase();
+    //เรียก store
+    var store = intMapStoreFactory.store("income-expense").record(dataId);
+    print("data in Updatedata : ${dataId}");
+    await store.update(db, {
+      "id": data.id,
+      "topic": data.topic,
+      "datetime": data.datetime.toString(),
+      "timeStamp": data.timeStamp.toString(),
+      "type": data.type,
+      "name": data.name,
+      "amount": data.amount,
+      "note": data.note
+    });
+    db.close();
   }
 
   //ดึงข้อมูล
@@ -69,6 +90,7 @@ class FinanceDB {
     List<FinanceVariable> financeList = FinanceProvider().FinanceList;
     for (var Record in snapshot) {
       int id = Record.key;
+      String topic = Record.value["topic"].toString();
       DateTime dtConvert = DateTime.parse(Record.value["datetime"].toString());
       DateTime tsConvert = DateTime.parse(Record.value["timeStamp"].toString());
       String type = Record.value["type"].toString();
@@ -76,11 +98,10 @@ class FinanceDB {
       double amount = double.parse(Record.value["amount"].toString());
       String note = Record.value["note"].toString();
 
-      //print(dtConvert.runtimeType);
-
       financeList.add(
         FinanceVariable(
             id: id,
+            topic: topic,
             datetime: dtConvert,
             timeStamp: tsConvert,
             type: type,
@@ -89,12 +110,12 @@ class FinanceDB {
             note: note),
       );
     }
-    print("financeList : ${financeList.toString()}");
+
     return financeList;
   }
 
   //ลบข้อมูล
-  Future deleteCake(int dataId) async {
+  Future deleteData(int dataId) async {
     //เรียกฐานข้อมูล
     var db = await this.openDatabase();
     //เรียก store
@@ -102,5 +123,56 @@ class FinanceDB {
     await store.record(dataId).delete(
           db,
         );
+    LoadAllData();
+  }
+
+  //จัดเรียงข้อมูลให้อยู่ในรูป Map<String,dynamic>DayData
+  Future QueryDayData() async {
+    //เรียกฐานข้อมูล
+    var db = await this.openDatabase();
+    //เรียก store
+    var store = intMapStoreFactory.store("income-expense");
+
+    var snapshot = await store.find(db,
+        finder: Finder(sortOrders: [SortOrder(Field.key, false)]));
+  }
+
+  //จัดเรียงข้อมูลเอาลง chart
+  Future<List<FinanceVariable>> LoadDAtaToChart() async {
+    //เรียกฐานข้อมูล
+    var db = await this.openDatabase();
+
+    //เรียก store
+    var store = intMapStoreFactory.store("income-expense");
+
+    //ข้อมูลจะออกมาในรูปแบบ <List<RecordSnapshot<int, Map<String, Object?>>>>
+    //finder: Finder(sortOrders: [SortOrder(Field.key, false)]) = เรียงข้อมูลจากใหม่ไปเก่า ใช้ false
+    var snapshot = await store.find(db,
+        finder: Finder(sortOrders: [SortOrder(Field.key, false)]));
+
+    List<FinanceVariable> financeList = FinanceProvider().FinanceList;
+    for (var Record in snapshot) {
+      int id = Record.key;
+      String topic = Record.value["topic"].toString();
+      DateTime dtConvert = DateTime.parse(Record.value["datetime"].toString());
+      DateTime tsConvert = DateTime.parse(Record.value["timeStamp"].toString());
+      String type = Record.value["type"].toString();
+      String name = Record.value["name"].toString();
+      double amount = double.parse(Record.value["amount"].toString());
+      String note = Record.value["note"].toString();
+
+      financeList.add(
+        FinanceVariable(
+            id: id,
+            topic: topic,
+            datetime: dtConvert,
+            timeStamp: tsConvert,
+            type: type,
+            name: name,
+            amount: amount,
+            note: note),
+      );
+    }
+    return financeList;
   }
 }

@@ -13,4 +13,6 @@ class AppColors {
   static final Color border = const Color(0xFFD9D9D9);
   static final Color income = const Color(0xFF00BF63);
   static final Color expenses = const Color(0xFFFF3131);
+  static final Color topicadd1 = const Color(0xFFFF3131);
+  static final Color topicadd2 = const Color(0xFFFF914D);
 }

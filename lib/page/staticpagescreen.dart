@@ -5,11 +5,19 @@ import 'package:incomeandexpansesapp/colors.dart';
 import 'package:incomeandexpansesapp/font.dart';
 import 'package:incomeandexpansesapp/page/Provider/financeProvider.dart';
 import 'package:incomeandexpansesapp/page/homepagescreen.dart';
+import 'package:incomeandexpansesapp/page/homepiegraph.dart';
 import 'package:incomeandexpansesapp/page/makegraph.dart';
+import 'package:incomeandexpansesapp/page/pie_chart.dart';
 import 'package:provider/provider.dart';
 
 class Staticmoney extends StatefulWidget {
-  const Staticmoney({super.key});
+  List result;
+  String? topic;
+  Staticmoney({
+    super.key,
+    required this.result,
+    required this.topic,
+  });
 
   @override
   State<Staticmoney> createState() => _HomepageScreenState();
@@ -18,10 +26,19 @@ class Staticmoney extends StatefulWidget {
 class _HomepageScreenState extends State<Staticmoney> {
   List typegraph = ["วัน", "สัปดาห์", "เดือน", "ปี"];
   int index_color = 0;
+  bool enabled2 = false;
+  bool enabled1 = false;
+
   @override
   Widget build(BuildContext context) {
     double Hscreen = MediaQuery.of(context).size.height;
     double Wscreen = MediaQuery.of(context).size.width;
+    var _result = widget.result;
+    var _topic = widget.topic;
+    print("เข้ามาหน้า กราฟ Staticmoney ");
+    print("_result :$_result ");
+    List results = [];
+
     return Scaffold(
       body: Stack(
         children: [
@@ -48,15 +65,49 @@ class _HomepageScreenState extends State<Staticmoney> {
                           bottomRight: Radius.circular(Wscreen * W20)),
                     ),
                     child: Container(
-                        margin: EdgeInsets.only(
-                            right: Wscreen * W20, left: Wscreen * W30),
+                        //color: Colors.black,
+                        // margin: EdgeInsets.only(right: 0, left: Wscreen * W15),
                         width: Wscreen,
                         child: Center(
                             child: Padding(
                           padding: EdgeInsets.only(top: Hscreen * H10),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              GestureDetector(
+                                onTap: () async {
+                                  setState(() => enabled2 = true);
+                                  await Future.delayed(
+                                      Duration(milliseconds: 200));
+                                  setState(() => enabled2 = false);
+                                  await Future.delayed(
+                                      Duration(milliseconds: 200));
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => HomepageScreen(
+                                                topicshow: _topic,
+                                              )));
+                                },
+                                child: Container(
+                                  child: Stack(children: [
+                                    Icon(
+                                      Icons.circle,
+                                      size: Hscreen * H70,
+                                      color: Colors.white,
+                                    ),
+                                    Icon(
+                                      Icons.arrow_circle_left,
+                                      size: Hscreen * H70,
+                                      color: enabled2
+                                          ? Colors.grey
+                                          : AppColors.addpink,
+                                    ),
+                                  ]),
+                                ),
+                              ),
+                              SizedBox(width: Wscreen * W30),
                               Container(
                                 margin: EdgeInsets.only(top: Hscreen * H15),
                                 child: Text(
@@ -69,23 +120,34 @@ class _HomepageScreenState extends State<Staticmoney> {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: Wscreen * W50),
+                              SizedBox(width: Wscreen * W45),
                               GestureDetector(
-                                onTap: () {
+                                onTap: () async {
+                                  setState(() => enabled1 = true);
+                                  await Future.delayed(
+                                      Duration(milliseconds: 200));
+                                  setState(() => enabled1 = false);
+                                  await Future.delayed(
+                                      Duration(milliseconds: 200));
+
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              HomepageScreen()));
+                                          builder: (context) => HomePieChart(
+                                              result: _result, topic: _topic)));
                                 },
                                 child: Center(
                                   child: Container(
-                                    height: Hscreen * H40,
-                                    width: Wscreen * W50,
+                                    height: Hscreen * H45,
+                                    width: Wscreen * W45,
                                     //color: Colors.white,
-                                    decoration: const BoxDecoration(
-                                      image: DecorationImage(
-                                        image: AssetImage("assets/home.png"),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(Hscreen * H50)),
+                                      color: enabled1 ? AppColors.border : null,
+                                      image: const DecorationImage(
+                                        image: AssetImage(
+                                            "assets/pngwing.com.png"),
                                       ),
                                     ),
                                   ),
@@ -155,88 +217,6 @@ class _HomepageScreenState extends State<Staticmoney> {
                               );
                             },
                           )
-
-                          // Container(
-                          //   width: Wscreen * W70,
-                          //   decoration: BoxDecoration(
-                          //     border: Border.all(color: Colors.white),
-                          //     borderRadius: BorderRadius.circular(
-                          //       Hscreen * H20,
-                          //     ),
-                          //     color: AppColors.addpink,
-                          //   ),
-                          //   alignment: Alignment.center,
-                          //   child: Padding(
-                          //     padding: EdgeInsets.only(
-                          //         top: Hscreen * H5,
-                          //         bottom: Hscreen * H5,
-                          //         left: Wscreen * W5,
-                          //         right: Wscreen * W5),
-                          //     child: Center(
-                          //       child: Text(
-                          //         "สัปดาห์",
-                          //         style: GoogleFonts.getFont("Mali",
-                          //             color: Colors.white,
-                          //             fontWeight: FontWeight.w500,
-                          //             fontSize: Hscreen * H16),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                          // Container(
-                          //   width: Wscreen * W70,
-                          //   decoration: BoxDecoration(
-                          //     border: Border.all(color: Colors.white),
-                          //     borderRadius: BorderRadius.circular(
-                          //       Hscreen * H20,
-                          //     ),
-                          //     color: AppColors.addpink,
-                          //   ),
-                          //   alignment: Alignment.center,
-                          //   child: Padding(
-                          //     padding: EdgeInsets.only(
-                          //         top: Hscreen * H5,
-                          //         bottom: Hscreen * H5,
-                          //         left: Wscreen * W5,
-                          //         right: Wscreen * W5),
-                          //     child: Center(
-                          //       child: Text(
-                          //         "เดือน",
-                          //         style: GoogleFonts.getFont("Mali",
-                          //             color: Colors.white,
-                          //             fontWeight: FontWeight.w500,
-                          //             fontSize: Hscreen * H16),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                          // Container(
-                          //   width: Wscreen * W70,
-                          //   decoration: BoxDecoration(
-                          //     border: Border.all(color: Colors.white),
-                          //     borderRadius: BorderRadius.circular(
-                          //       Hscreen * H20,
-                          //     ),
-                          //     color: AppColors.addpink,
-                          //   ),
-                          //   alignment: Alignment.center,
-                          //   child: Padding(
-                          //     padding: EdgeInsets.only(
-                          //         top: Hscreen * H5,
-                          //         bottom: Hscreen * H5,
-                          //         left: Wscreen * W5,
-                          //         right: Wscreen * W5),
-                          //     child: Center(
-                          //       child: Text(
-                          //         "ปี",
-                          //         style: GoogleFonts.getFont("Mali",
-                          //             color: Colors.white,
-                          //             fontWeight: FontWeight.w500,
-                          //             fontSize: Hscreen * H16),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // )
                         ],
                       )),
                 ),
@@ -244,7 +224,59 @@ class _HomepageScreenState extends State<Staticmoney> {
                   flex: 14,
                   child: Consumer(
                       builder: (context, FinanceProvider provider, widget) {
-                    return provider.FinanceList.isEmpty
+                    if (index_color == 0) {
+                      for (var data in _result) {
+                        var datetimeInDB =
+                            "${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}-${data.datetime.day.toString().padLeft(2, "0")}";
+                        var datetimeDay =
+                            "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, "0")}-${DateTime.now().day.toString().padLeft(2, "0")}";
+                        if (datetimeInDB == datetimeDay) {
+                          results.add(data);
+                        }
+                      }
+                    } else if (index_color == 1) {
+                      for (var data in _result) {
+                        List dayinweek = [];
+                        for (var i = 0; i <= 6; i++) {
+                          var dodayEnd =
+                              int.parse(DateTime.now().day.toString()) - i;
+                          DateTime day = DateTime(DateTime.now().year,
+                              DateTime.now().month, dodayEnd);
+                          dayinweek.add(day);
+                        }
+
+                        var datetimeInDB =
+                            "${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}-${data.datetime.day.toString().padLeft(2, "0")}";
+
+                        for (var day in dayinweek) {
+                          var dayweekstring =
+                              "${day.year}-${day.month.toString().padLeft(2, "0")}-${day.day.toString().padLeft(2, "0")}";
+
+                          if (datetimeInDB == dayweekstring) {
+                            results.add(data);
+                          }
+                        }
+                      }
+                    } else if (index_color == 2) {
+                      for (var data in _result) {
+                        var datetimeInDB =
+                            "${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}";
+                        var datetimeMonth =
+                            "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, "0")}";
+                        if (datetimeInDB == datetimeMonth) {
+                          results.add(data);
+                        }
+                      }
+                    } else if (index_color == 3) {
+                      for (var data in _result) {
+                        var datetimeInDB = "${data.datetime.year}";
+                        var datetimeMonth = "${DateTime.now().year}";
+                        if (datetimeInDB == datetimeMonth) {
+                          results.add(data);
+                        }
+                      }
+                    }
+                    return results.isEmpty || results.length < 2
                         ? Center(
                             child: Container(
                                 height: Hscreen * H200,
@@ -253,12 +285,23 @@ class _HomepageScreenState extends State<Staticmoney> {
                                     image: AssetImage("assets/empty-box.png"),
                                   ),
                                 ),
-                                child: Text(
-                                  "ยังไม่มีการบันทึกข้อมูลจ้า",
-                                  style: GoogleFonts.getFont(Fonttype.Mali,
-                                      fontSize: Hscreen * H16,
-                                      color: AppColors.textblue,
-                                      fontWeight: FontWeight.bold),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      "ข้อมูลที่มีน้อยกว่า 2 ",
+                                      style: GoogleFonts.getFont(Fonttype.Mali,
+                                          fontSize: Hscreen * H16,
+                                          color: AppColors.textblue,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      "ไม่สามารถวิเคราะห์กราฟได้จ้า",
+                                      style: GoogleFonts.getFont(Fonttype.Mali,
+                                          fontSize: Hscreen * H16,
+                                          color: AppColors.textblue,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
                                 )),
                           )
                         : CustomScrollView(
@@ -292,20 +335,20 @@ class _HomepageScreenState extends State<Staticmoney> {
                                         left: Wscreen * W30,
                                         bottom: Hscreen * H5,
                                       ),
-                                      child: Graph(),
+                                      child: Graph(
+                                        result: _result,
+                                        index_color: index_color,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                               SliverList(
                                 delegate: SliverChildBuilderDelegate(
-                                    childCount: provider.FinanceList.length,
+                                    childCount: results.length,
                                     (BuildContext context, index) {
-                                  FinanceVariable data =
-                                      provider.FinanceList[index];
-                                  print(provider.FinanceList.length);
-                                  // print(
-                                  //     "${DateFormat.yMMMMd().format(datainput()[index].date!)} ${datainput()[index].time}");
+                                  FinanceVariable data = results[index];
+
                                   return Container(
                                     padding: EdgeInsets.only(
                                         //top: Hscreen * H5,

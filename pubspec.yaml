@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.0+8
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -37,13 +37,14 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   google_fonts: ^6.1.0
-  syncfusion_flutter_charts: ^24.2.9
+  syncfusion_flutter_charts: ^25.1.35
   provider: ^6.1.2
   intl: ^0.19.0
   flutter_datetime_picker_plus: ^2.1.0
   sembast: ^3.6.0
   path_provider: ^2.1.2
   path: ^1.9.0
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -54,7 +55,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -99,3 +100,24 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/ICEP.png"
+  adaptive_icon_backgroung: "#c40000"
+  adaptive_icon_foregroung: "#c40000"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/icon/ICEP.png"
+    background_color: "#c40000"
+    theme_color: "#fff6f4"
+  windows:
+    generate: true
+    image_path: "assets/icon/ICEP.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/icon/ICEP.png"
