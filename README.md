@@ -3,14 +3,25 @@
 A new Flutter project.
 
 ## Getting Started
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/1.%20splassscreen.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/2.%20firstpage-addaccount-1.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/3.%20firstpage-addaccount-2.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/4.%20firstpage-addaccount-3.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/5.%20firstpage-edit-and%20delete-account.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/6.%20firstpage-edit-account.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/7.%20secondpage-edit-detailt.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/8.%20secondpage-select%20date-detail-1.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/9.%20secondpage-select%20date-detail-2.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/10.%20secondpage-detail.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/11.%20thirdpage-linechart%20in%20day.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/12.%20thirdpage-linechart%20in%20week.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/13.%20thirdpage-linechart%20in%20month.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/14.%20thirdpage-linechart%20in%20year.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/15.%20forthpage-donuschart%20in%20day.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/16.%20forthpage-donuschart%20in%20week.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/17.%20forthpage-donuschart%20in%20month.jpg" width="150" />
+<img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/18.%20forthpage-donuschart%20in%20year.jpg" width="150" />
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
