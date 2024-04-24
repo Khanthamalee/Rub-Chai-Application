@@ -1,6 +1,7 @@
 # incomeandexpansesapp
 
-A new Flutter project.
+* You can try using the application at https://play.google.com/store/apps/details?id=com.Naudom.incomeandexpansesapp. 
+ * คุณสามารถทดลองใช้งานแอพพลิเคชันรุ่นทดลองได้ที่ https://play.google.com/store/apps/details?id=com.Naudom.incomeandexpansesapp
 
 ## Getting Started
 <img src="https://github.com/Khanthamalee/Rub-Chai-Application/blob/main/assets/%E0%B8%A3%E0%B8%B1%E0%B8%9A-%E0%B8%88%E0%B9%88%E0%B8%B2%E0%B8%A2/1.%20splassscreen.jpg" width="150" />
