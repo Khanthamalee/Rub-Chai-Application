@@ -14,17 +14,24 @@ class Graph extends StatefulWidget {
 
 class _GraphState extends State<Graph> {
   void DateTimeSort(
-    List<variablemoney> Graph,
+    List Graph,
     List<variablemoney> Graphsort,
     List<DateTime> Timesort,
   ) {
     //Graph = [];
     Timesort.sort();
+    var allamount = 0.0;
     for (var t in Timesort) {
       for (var g in Graph) {
         if (g.datetime == t) {
           DateTime timeDateTime = g.datetime;
-          Graphsort.add(variablemoney(timeDateTime, g.Allamount));
+          if (g.type == "รายรับ") {
+            allamount = allamount + g.amount;
+          } else if (g.type == "รายจ่าย") {
+            allamount = allamount - g.amount;
+          }
+          print("$timeDateTime and  ${allamount}");
+          Graphsort.add(variablemoney(timeDateTime, allamount));
         }
       }
     }
@@ -33,10 +40,11 @@ class _GraphState extends State<Graph> {
   @override
   Widget build(BuildContext context) {
     double Hscreen = MediaQuery.of(context).size.height;
-    List<variablemoney> graph = [];
+
     List<variablemoney> graphsort = [];
     List<DateTime> timesort = [];
     List _result = widget.result;
+    List graph = [];
     int _index_color = widget.index_color;
     print("เข้ามาหน้า กราฟ โหลด Graph ");
     print("_result :$_result ");
@@ -49,7 +57,6 @@ class _GraphState extends State<Graph> {
       width: double.infinity,
       height: Hscreen * H450,
       child: Builder(builder: (Context) {
-        double sumAmount = 0.0;
         if (_index_color == 0) {
           for (var data in _result) {
             var datetimeInDB =
@@ -57,18 +64,12 @@ class _GraphState extends State<Graph> {
             var datetimeDay =
                 "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, "0")}-${DateTime.now().day.toString().padLeft(2, "0")}";
             if (datetimeInDB == datetimeDay) {
-              DateTime time = data.datetime;
               timesort.add(data.datetime);
-              if (data.type == "รายรับ") {
-                sumAmount = sumAmount + data.amount;
-              } else if (data.type == "รายจ่าย") {
-                sumAmount = sumAmount - data.amount;
-              }
-
-              graph.add(variablemoney(time, sumAmount));
+              graph.add(data);
             }
           }
           DateTimeSort(graph, graphsort, timesort);
+          print("graph : ${graph}");
         } else if (_index_color == 1) {
           for (var data in _result) {
             List dayinweek = [];
@@ -84,20 +85,10 @@ class _GraphState extends State<Graph> {
             for (var day in dayinweek) {
               var dayweekstring =
                   "${day.year}-${day.month.toString().padLeft(2, "0")}-${day.day.toString().padLeft(2, "0")}";
+
               if (datetimeInDB == dayweekstring) {
-                //print("day in var day in dayinweek: $day");
-                DateTime time = data.datetime;
-                print("time in var day in dayinweek: $time");
                 timesort.add(data.datetime);
-                print("timesort in var day in dayinweek: $timesort");
-                if (data.type == "รายรับ") {
-                  sumAmount = sumAmount + data.amount;
-                  print("sumAmount in รายรับ : $sumAmount");
-                } else if (data.type == "รายจ่าย") {
-                  sumAmount = sumAmount - data.amount;
-                  print("sumAmount in รายจ่าย : $sumAmount");
-                }
-                graph.add(variablemoney(time, sumAmount));
+                graph.add(data);
               }
             }
           }
@@ -109,14 +100,8 @@ class _GraphState extends State<Graph> {
             var datetimeMonth =
                 "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, "0")}";
             if (datetimeInDB == datetimeMonth) {
-              DateTime time = data.datetime;
               timesort.add(data.datetime);
-              if (data.type == "รายรับ") {
-                sumAmount = sumAmount + data.amount;
-              } else if (data.type == "รายจ่าย") {
-                sumAmount = sumAmount - data.amount;
-              }
-              graph.add(variablemoney(time, sumAmount));
+              graph.add(data);
             }
           }
           DateTimeSort(graph, graphsort, timesort);
@@ -125,14 +110,8 @@ class _GraphState extends State<Graph> {
             var datetimeInDB = "${data.datetime.year}";
             var datetimeMonth = "${DateTime.now().year}";
             if (datetimeInDB == datetimeMonth) {
-              DateTime time = data.datetime;
-              timesort.add(time);
-              if (data.type == "รายรับ") {
-                sumAmount = sumAmount + data.amount;
-              } else if (data.type == "รายจ่าย") {
-                sumAmount = sumAmount - data.amount;
-              }
-              graph.add(variablemoney(time, sumAmount));
+              timesort.add(data.datetime);
+              graph.add(data);
             }
           }
           DateTimeSort(graph, graphsort, timesort);

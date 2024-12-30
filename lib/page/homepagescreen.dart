@@ -61,9 +61,16 @@ class _HomepageScreenState extends State<HomepageScreen> {
           builder: (BuildContext context, FinanceProvider provider, widget) {
         List<FinanceVariable> result = [];
         for (var data in provider.FinanceList) {
-          if (data.topic == _topicshow) {
-            result.add(data);
-          }
+          // if (data.topic == _topicshow) {
+          //   if (data.type == "รายจ่าย") {
+          //     data.amount = ((data.amount)! * -1);
+          //     result.add(data);
+          //   } else if (data.type == "รายรับ") {
+          //     data.amount = data.amount;
+          //     result.add(data);
+          //   }
+          // }
+          result.add(data);
         }
         print("เข้ามาหน้า homepage");
         print(result);
@@ -318,23 +325,6 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                           image:
                                               AssetImage("assets/search.png"),
                                           fit: BoxFit.fill),
-                                      // boxShadow: enabled
-                                      //     ? []
-                                      //     : [
-                                      //         BoxShadow(
-                                      //             offset: Offset(
-                                      //                 -(Wscreen * W2),
-                                      //                 -(Hscreen * H2)),
-                                      //             blurRadius: Hscreen * H2,
-                                      //             color: Colors.white,
-                                      //             spreadRadius: 1),
-                                      //         BoxShadow(
-                                      //             offset: Offset(Wscreen * W2,
-                                      //                 Hscreen * H2),
-                                      //             blurRadius: Hscreen * H2,
-                                      //             color: Colors.grey,
-                                      //             spreadRadius: 1),
-                                      //       ],
                                     ),
                                   ),
                                   SizedBox(width: Wscreen * W10),

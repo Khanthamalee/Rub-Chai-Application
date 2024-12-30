@@ -35,6 +35,7 @@ class _HomepageScreenState extends State<Staticmoney> {
     double Wscreen = MediaQuery.of(context).size.width;
     var _result = widget.result;
     var _topic = widget.topic;
+
     print("เข้ามาหน้า กราฟ Staticmoney ");
     print("_result :$_result ");
     List results = [];
