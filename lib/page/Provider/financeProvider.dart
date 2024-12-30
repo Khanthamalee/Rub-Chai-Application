@@ -173,6 +173,7 @@ class FinanceProvider with ChangeNotifier {
       var type = element.type;
 
       if (type == "รายรับ") {
+        print("รายรับ : ${element.name}");
         incomedata.add(element);
       } else if (type == "Nodata") {
         incomedata.add(element);
@@ -201,6 +202,7 @@ class FinanceProvider with ChangeNotifier {
       var type = element.type;
 
       if (type == "รายจ่าย") {
+        print("รายจ่าย  : ${element.name}");
         expensesdata.add(element);
       } else if (type == "Nodata") {
         expensesdata.add(element);

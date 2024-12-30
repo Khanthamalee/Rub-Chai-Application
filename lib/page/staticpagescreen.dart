@@ -209,7 +209,7 @@ class _HomepageScreenState extends State<Staticmoney> {
                                                 ? Colors.white
                                                 : AppColors.textblue,
                                             fontWeight: FontWeight.w500,
-                                            fontSize: Hscreen * H16),
+                                            fontSize: Hscreen * H12),
                                       ),
                                     ),
                                   ),

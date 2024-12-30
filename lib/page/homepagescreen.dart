@@ -49,7 +49,6 @@ class _HomepageScreenState extends State<HomepageScreen> {
   bool enabled2 = false;
   bool enabled3 = false;
   bool enabled4 = false;
-  
 
   @override
   Widget build(BuildContext context) {
@@ -232,35 +231,20 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                     const Duration(milliseconds: 200));
                                 setState(() {
                                   results = result;
+                                  print("results :  $results");
                                   provider.sumExpense(results);
                                   provider.sumIncome(results);
                                 });
                               },
                               child: Container(
                                 height: Hscreen * H40,
-                                width: Wscreen * W120,
+                                width: Wscreen * W130,
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(Hscreen * H20)),
-                                    border:
-                                        Border.all(color: AppColors.addpink),
-                                    boxShadow: enabled1
-                                        ? []
-                                        : [
-                                            BoxShadow(
-                                                offset: Offset(-(Wscreen * W2),
-                                                    -(Hscreen * H2)),
-                                                blurRadius: Hscreen * H2,
-                                                color: Colors.white,
-                                                spreadRadius: 1),
-                                            BoxShadow(
-                                                offset: Offset(
-                                                    Wscreen * W2, Hscreen * H2),
-                                                blurRadius: Hscreen * H2,
-                                                color: Colors.grey,
-                                                spreadRadius: 1),
-                                          ]),
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(Hscreen * H10)),
+                                  border: Border.all(color: AppColors.addpink),
+                                ),
                                 child: Center(
                                   child: Text(
                                     "ประวัติทั้งหมด",
@@ -329,28 +313,29 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                   Container(
                                     height: Hscreen * H30,
                                     width: Wscreen * W30,
-                                    decoration: BoxDecoration(
-                                        image: const DecorationImage(
-                                            image:
-                                                AssetImage("assets/search.png"),
-                                            fit: BoxFit.fill),
-                                        boxShadow: enabled
-                                            ? []
-                                            : [
-                                                BoxShadow(
-                                                    offset: Offset(
-                                                        -(Wscreen * W2),
-                                                        -(Hscreen * H2)),
-                                                    blurRadius: Hscreen * H2,
-                                                    color: Colors.white,
-                                                    spreadRadius: 1),
-                                                BoxShadow(
-                                                    offset: Offset(Wscreen * W2,
-                                                        Hscreen * H2),
-                                                    blurRadius: Hscreen * H2,
-                                                    color: Colors.grey,
-                                                    spreadRadius: 1),
-                                              ]),
+                                    decoration: const BoxDecoration(
+                                      image: DecorationImage(
+                                          image:
+                                              AssetImage("assets/search.png"),
+                                          fit: BoxFit.fill),
+                                      // boxShadow: enabled
+                                      //     ? []
+                                      //     : [
+                                      //         BoxShadow(
+                                      //             offset: Offset(
+                                      //                 -(Wscreen * W2),
+                                      //                 -(Hscreen * H2)),
+                                      //             blurRadius: Hscreen * H2,
+                                      //             color: Colors.white,
+                                      //             spreadRadius: 1),
+                                      //         BoxShadow(
+                                      //             offset: Offset(Wscreen * W2,
+                                      //                 Hscreen * H2),
+                                      //             blurRadius: Hscreen * H2,
+                                      //             color: Colors.grey,
+                                      //             spreadRadius: 1),
+                                      //       ],
+                                    ),
                                   ),
                                   SizedBox(width: Wscreen * W10),
                                   Text(
@@ -373,8 +358,8 @@ class _HomepageScreenState extends State<HomepageScreen> {
                     child: Padding(
                       padding: EdgeInsets.only(
                         //top: Hscreen * H5,
-                        right: Wscreen * W30,
-                        left: Wscreen * W30,
+                        right: Wscreen * W20,
+                        left: Wscreen * W20,
                         bottom: Hscreen * H5,
                       ),
                       child: result.isEmpty && results.isEmpty
@@ -520,88 +505,66 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.start,
                                         children: [
                                           Container(
                                             height: Hscreen * H70,
-                                            width: Wscreen * W70,
+                                            width: Wscreen * W365,
                                             decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.only(
-                                                    topLeft: Radius.circular(
-                                                        Hscreen * H20),
-                                                    topRight: Radius.circular(
-                                                        Hscreen * H20),
-                                                    bottomLeft: Radius.circular(
-                                                        Hscreen * H20),
-                                                    bottomRight:
-                                                        Radius.circular(
-                                                            Hscreen * H20)),
-                                                image: DecorationImage(
-                                                    image: data.type == "รายรับ"
-                                                        ? const AssetImage(
-                                                            "assets/like.png")
-                                                        : data.type == "รายจ่าย"
-                                                            ? const AssetImage(
-                                                                "assets/dislike.png")
-                                                            : const AssetImage(
-                                                                "assets/empty-box.png"))),
-                                          ),
-                                          SizedBox(
-                                            width: Wscreen * W5,
-                                          ),
-                                          Container(
-                                            height: Hscreen * H70,
-                                            width: Wscreen * W270,
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.only(
-                                                    topLeft: Radius.circular(
-                                                        Hscreen * H20),
-                                                    topRight: Radius.circular(
-                                                        Hscreen * H20),
-                                                    bottomLeft: Radius.circular(
-                                                        Hscreen * H30),
-                                                    bottomRight:
-                                                        Radius.circular(
-                                                            Hscreen * H20)),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(
+                                                        Hscreen * H10)),
                                                 color: AppColors.boxpurple),
                                             child: Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: Hscreen * H10,
-                                                  left: Wscreen * W15,
-                                                  right: Wscreen * W10),
+                                              padding:
+                                                  EdgeInsets.all(Hscreen * H10),
                                               child: Row(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
+                                                    CrossAxisAlignment.start,
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                                    MainAxisAlignment.start,
                                                 children: [
                                                   data.type == "Nodata"
                                                       ? SizedBox(
-                                                          width: Wscreen * W240,
+                                                          width: Wscreen * W340,
                                                           child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
                                                             children: [
-                                                              // Text(
-                                                              //   "วันที่ ${datainput()[index].date} เวลา ${datainput()[index].time}",
-                                                              Text(
-                                                                "${data.datetime!.year}/${data.datetime!.month}/${data.datetime!.day} เวลา ${data.datetime!.hour.toString().padLeft(2, "0")}:${data.datetime!.minute.toString().padLeft(2, "0")}",
-                                                                style: GoogleFonts.getFont(
-                                                                    "Mali",
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                    fontSize:
-                                                                        Hscreen *
-                                                                            H14),
-                                                              ),
+                                                              Row(children: [
+                                                                Container(
+                                                                  height:
+                                                                      Hscreen *
+                                                                          H20,
+                                                                  width:
+                                                                      Wscreen *
+                                                                          W15,
+                                                                  decoration: BoxDecoration(
+                                                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(Hscreen * H20), topRight: Radius.circular(Hscreen * H20), bottomLeft: Radius.circular(Hscreen * H20), bottomRight: Radius.circular(Hscreen * H20)),
+                                                                      image: DecorationImage(
+                                                                          image: data.type == "รายรับ"
+                                                                              ? const AssetImage("assets/like.png")
+                                                                              : data.type == "รายจ่าย"
+                                                                                  ? const AssetImage("assets/dislike.png")
+                                                                                  : const AssetImage("assets/empty-box.png"))),
+                                                                ),
+                                                                SizedBox(
+                                                                  width:
+                                                                      Wscreen *
+                                                                          W5,
+                                                                ),
+                                                                Text(
+                                                                  "${data.datetime!.year}/${data.datetime!.month}/${data.datetime!.day} เวลา ${data.datetime!.hour.toString().padLeft(2, "0")}:${data.datetime!.minute.toString().padLeft(2, "0")}",
+                                                                  style: GoogleFonts.getFont(
+                                                                      "Mali",
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      fontSize:
+                                                                          Hscreen *
+                                                                              H14),
+                                                                ),
+                                                              ]),
                                                               SizedBox(
                                                                 height:
                                                                     Hscreen *
@@ -609,32 +572,35 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                               ),
                                                               Row(
                                                                 children: [
-                                                                  Container(
-                                                                    width:
-                                                                        Wscreen *
-                                                                            W170,
-                                                                    child: Text(
-                                                                      "${data.name}",
-                                                                      maxLines:
-                                                                          1,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                      style: GoogleFonts.getFont(
-                                                                          Fonttype
-                                                                              .Mali,
-                                                                          color: Colors
-                                                                              .white,
-                                                                          fontWeight: FontWeight
-                                                                              .w500,
-                                                                          fontSize:
-                                                                              Hscreen * H14),
+                                                                  Padding(
+                                                                    padding: EdgeInsets.all(
+                                                                        Hscreen *
+                                                                            H8),
+                                                                    child:
+                                                                        SizedBox(
+                                                                      width: Wscreen *
+                                                                          W230,
+                                                                      child:
+                                                                          Text(
+                                                                        "${data.name}",
+                                                                        maxLines:
+                                                                            1,
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
+                                                                        style: GoogleFonts.getFont(
+                                                                            Fonttype
+                                                                                .Mali,
+                                                                            color:
+                                                                                Colors.white,
+                                                                            fontWeight: FontWeight.w500,
+                                                                            fontSize: Hscreen * H14),
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                   Container(
                                                                     width:
                                                                         Wscreen *
-                                                                            W50,
+                                                                            W100,
                                                                     child: Text(
                                                                       "${data.amount} บาท",
                                                                       maxLines:
@@ -659,70 +625,87 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                           ),
                                                         )
                                                       : SizedBox(
-                                                          width: Wscreen * W240,
+                                                          width: Wscreen * W340,
                                                           child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
                                                             children: [
-                                                              // Text(
-                                                              //   "วันที่ ${datainput()[index].date} เวลา ${datainput()[index].time}",
-                                                              Text(
-                                                                "${data.datetime!.year}/${data.datetime!.month}/${data.datetime!.day} เวลา ${data.datetime!.hour.toString().padLeft(2, "0")}:${data.datetime!.minute.toString().padLeft(2, "0")}",
-                                                                style: GoogleFonts.getFont(
-                                                                    "Mali",
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                    fontSize:
-                                                                        Hscreen *
-                                                                            H14),
-                                                              ),
+                                                              Row(children: [
+                                                                Container(
+                                                                  height:
+                                                                      Hscreen *
+                                                                          H25,
+                                                                  width:
+                                                                      Wscreen *
+                                                                          W20,
+                                                                  decoration: BoxDecoration(
+                                                                      //borderRadius: BorderRadius.only(topLeft: Radius.circular(Hscreen * H10), topRight: Radius.circular(Hscreen * H10), bottomLeft: Radius.circular(Hscreen * H10), bottomRight: Radius.circular(Hscreen * H10)),
+                                                                      image: DecorationImage(
+                                                                          image: data.type == "รายรับ"
+                                                                              ? const AssetImage("assets/like.png")
+                                                                              : data.type == "รายจ่าย"
+                                                                                  ? const AssetImage("assets/dislike.png")
+                                                                                  : const AssetImage("assets/empty-box.png"))),
+                                                                ),
+                                                                SizedBox(
+                                                                  width:
+                                                                      Wscreen *
+                                                                          W10,
+                                                                ),
+                                                                Text(
+                                                                  "${data.datetime!.year}/${data.datetime!.month}/${data.datetime!.day} เวลา ${data.datetime!.hour.toString().padLeft(2, "0")}:${data.datetime!.minute.toString().padLeft(2, "0")}",
+                                                                  style: GoogleFonts.getFont(
+                                                                      "Mali",
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      fontSize:
+                                                                          Hscreen *
+                                                                              H14),
+                                                                ),
+                                                              ]),
                                                               SizedBox(
                                                                 height:
                                                                     Hscreen *
                                                                         H5,
                                                               ),
                                                               Row(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
                                                                 children: [
-                                                                  Container(
+                                                                  SizedBox(
+                                                                      width: Wscreen *
+                                                                          W230,
+                                                                      child:
+                                                                          Padding(
+                                                                        padding:
+                                                                            EdgeInsets.only(left: Wscreen * W30),
+                                                                        child:
+                                                                            Text(
+                                                                          "${data.name}",
+                                                                          maxLines:
+                                                                              1,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                          style: GoogleFonts.getFont(
+                                                                              Fonttype.Mali,
+                                                                              color: Colors.white,
+                                                                              fontWeight: FontWeight.w500,
+                                                                              fontSize: Hscreen * H14),
+                                                                        ),
+                                                                      )),
+                                                                  SizedBox(
                                                                     width:
                                                                         Wscreen *
-                                                                            W160,
-                                                                    child: Text(
-                                                                      "${data.name}",
-                                                                      maxLines:
-                                                                          1,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                      style: GoogleFonts.getFont(
-                                                                          Fonttype
-                                                                              .Mali,
-                                                                          color: Colors
-                                                                              .white,
-                                                                          fontWeight: FontWeight
-                                                                              .w500,
-                                                                          fontSize:
-                                                                              Hscreen * H14),
-                                                                    ),
-                                                                  ),
-                                                                  Container(
-                                                                    width:
-                                                                        Wscreen *
-                                                                            W70,
+                                                                            W100,
                                                                     child: Text(
                                                                       "${data.amount} บาท",
                                                                       maxLines:
                                                                           1,
                                                                       overflow:
                                                                           TextOverflow
-                                                                              .ellipsis,
+                                                                              .fade,
                                                                       style: GoogleFonts.getFont(
                                                                           Fonttype
                                                                               .Mali,

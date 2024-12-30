@@ -114,6 +114,11 @@ const double W250 = 0.608;
 const double W270 = 0.656;
 const double W275 = 0.668;
 const double W300 = 0.729;
+
+//Width 411.4185
 const double W330 = 0.802;
+const double W340 = 0.826;
 const double W350 = 0.851;
+const double W360 = 0.875;
+const double W365 = 0.887;
 const double W400 = 0.972;

@@ -36,7 +36,7 @@ apply plugin: "dev.flutter.flutter-gradle-plugin"
 
 android {
     namespace "com.Naudom.incomeandexpansesapp"
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 35
     ndkVersion "25.1.8937393"
 
     compileOptions {
