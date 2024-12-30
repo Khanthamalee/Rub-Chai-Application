@@ -181,7 +181,7 @@ class _HomepageScreenState extends State<Staticmoney> {
                                   });
                                 },
                                 child: Container(
-                                  width: Wscreen * W70,
+                                  width: Wscreen * W80,
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                         color: index_color == index
@@ -209,7 +209,7 @@ class _HomepageScreenState extends State<Staticmoney> {
                                                 ? Colors.white
                                                 : AppColors.textblue,
                                             fontWeight: FontWeight.w500,
-                                            fontSize: Hscreen * H16),
+                                            fontSize: Hscreen * H14),
                                       ),
                                     ),
                                   ),

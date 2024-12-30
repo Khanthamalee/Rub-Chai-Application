@@ -5,6 +5,7 @@ import 'package:incomeandexpansesapp/page/addtopicpage.dart';
 import 'package:provider/provider.dart';
 import 'package:incomeandexpansesapp/colors.dart';
 
+//REWRITE
 void main() {
   runApp(MyApp());
 }

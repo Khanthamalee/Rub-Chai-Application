@@ -49,7 +49,6 @@ class _HomepageScreenState extends State<HomepageScreen> {
   bool enabled2 = false;
   bool enabled3 = false;
   bool enabled4 = false;
-  
 
   @override
   Widget build(BuildContext context) {
@@ -240,31 +239,16 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                 height: Hscreen * H40,
                                 width: Wscreen * W120,
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(Hscreen * H20)),
-                                    border:
-                                        Border.all(color: AppColors.addpink),
-                                    boxShadow: enabled1
-                                        ? []
-                                        : [
-                                            BoxShadow(
-                                                offset: Offset(-(Wscreen * W2),
-                                                    -(Hscreen * H2)),
-                                                blurRadius: Hscreen * H2,
-                                                color: Colors.white,
-                                                spreadRadius: 1),
-                                            BoxShadow(
-                                                offset: Offset(
-                                                    Wscreen * W2, Hscreen * H2),
-                                                blurRadius: Hscreen * H2,
-                                                color: Colors.grey,
-                                                spreadRadius: 1),
-                                          ]),
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(Hscreen * H20)),
+                                  border: Border.all(color: AppColors.addpink),
+                                ),
                                 child: Center(
                                   child: Text(
                                     "ประวัติทั้งหมด",
                                     style: GoogleFonts.getFont(Fonttype.Mali,
+                                        //color: Colors.black,
                                         color: AppColors.textgrey,
                                         fontWeight: FontWeight.bold,
                                         fontSize: Hscreen * H14),
@@ -330,27 +314,11 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                     height: Hscreen * H30,
                                     width: Wscreen * W30,
                                     decoration: BoxDecoration(
-                                        image: const DecorationImage(
-                                            image:
-                                                AssetImage("assets/search.png"),
-                                            fit: BoxFit.fill),
-                                        boxShadow: enabled
-                                            ? []
-                                            : [
-                                                BoxShadow(
-                                                    offset: Offset(
-                                                        -(Wscreen * W2),
-                                                        -(Hscreen * H2)),
-                                                    blurRadius: Hscreen * H2,
-                                                    color: Colors.white,
-                                                    spreadRadius: 1),
-                                                BoxShadow(
-                                                    offset: Offset(Wscreen * W2,
-                                                        Hscreen * H2),
-                                                    blurRadius: Hscreen * H2,
-                                                    color: Colors.grey,
-                                                    spreadRadius: 1),
-                                              ]),
+                                      image: const DecorationImage(
+                                          image:
+                                              AssetImage("assets/schedule.png"),
+                                          fit: BoxFit.fill),
+                                    ),
                                   ),
                                   SizedBox(width: Wscreen * W10),
                                   Text(
