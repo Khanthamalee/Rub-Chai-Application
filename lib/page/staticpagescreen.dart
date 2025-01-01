@@ -83,7 +83,7 @@ class _HomepageScreenState extends State<Staticmoney> {
                                   setState(() => enabled2 = false);
                                   await Future.delayed(
                                       Duration(milliseconds: 200));
-                                  Navigator.pop(context);
+                                  //Navigator.pop(context);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -233,6 +233,7 @@ class _HomepageScreenState extends State<Staticmoney> {
                             "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, "0")}-${DateTime.now().day.toString().padLeft(2, "0")}";
                         if (datetimeInDB == datetimeDay) {
                           results.add(data);
+                          print("result.lenght : ${results.length}");
                         }
                       }
                     } else if (index_color == 1) {
@@ -255,6 +256,8 @@ class _HomepageScreenState extends State<Staticmoney> {
 
                           if (datetimeInDB == dayweekstring) {
                             results.add(data);
+                            print(dayweekstring);
+                            print("results.lenght : ${results.length}");
                           }
                         }
                       }
@@ -266,6 +269,7 @@ class _HomepageScreenState extends State<Staticmoney> {
                             "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, "0")}";
                         if (datetimeInDB == datetimeMonth) {
                           results.add(data);
+                          print("results.lenght : ${results.length}");
                         }
                       }
                     } else if (index_color == 3) {
@@ -274,6 +278,7 @@ class _HomepageScreenState extends State<Staticmoney> {
                         var datetimeMonth = "${DateTime.now().year}";
                         if (datetimeInDB == datetimeMonth) {
                           results.add(data);
+                          print("results.lenght : ${results.length}");
                         }
                       }
                     }
