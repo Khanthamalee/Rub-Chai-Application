@@ -61,7 +61,9 @@ class _HomepageScreenState extends State<HomepageScreen> {
           builder: (BuildContext context, FinanceProvider provider, widget) {
         List<FinanceVariable> result = [];
         for (var data in provider.FinanceList) {
-          result.add(data);
+          if (data.topic == _topicshow) {
+            result.add(data);
+          }
         }
         print("เข้ามาหน้า homepage");
         print(result);
