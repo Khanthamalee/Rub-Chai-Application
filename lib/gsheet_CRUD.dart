@@ -1,6 +1,28 @@
 import 'gsheet_setup.dart';
 
-void InsertDataIntoGSheet(data) async {
+InsertDataIntoGSheet(data) async {
+  print(data[0]["topic"]);
+  // if (data == "รายรับ") {
+  //   data = {
+  //     "topic": data.topic,
+  //     "date": DateTime.now(),
+  //     "name": data.name,
+  //     "typeI": data.type,
+  //     "typeE": "",
+  //     "amount": data.amount,
+  //     "note": data.note
+  //   };
+  // } else {
+  //   data = {
+  //     "topic": data.topic,
+  //     "date": DateTime.now(),
+  //     "name": data.name,
+  //     "typeI": "",
+  //     "typeE": data.type,
+  //     "amount": data.amount,
+  //     "note": data.note
+  //   };
+  // }
   await GsheetCRUDUserDetails!.values.map.appendRows(data);
   print("Data stored");
 }
