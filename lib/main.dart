@@ -4,6 +4,7 @@ import 'package:incomeandexpansesapp/page/Provider/financeProvider.dart';
 import 'package:incomeandexpansesapp/page/addtopicpage.dart';
 import 'package:provider/provider.dart';
 import 'package:incomeandexpansesapp/colors.dart';
+import 'gsheet_CRUD.dart';
 import 'gsheet_setup.dart';
 
 Future main() async {
@@ -78,6 +79,7 @@ class InitState extends State<SplashScreen> {
 
   Widget initWidget() {
     double Hscreen = MediaQuery.of(context).size.height;
+   
 
     return Scaffold(
         body: Stack(children: [

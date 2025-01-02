@@ -96,11 +96,11 @@ class _EditListState extends State<EditList> {
                       await Future.delayed(Duration(milliseconds: 200));
                       //Navigator.pop(context);
                       Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HomepageScreen(
-                                      topicshow: _topic,
-                                    )));
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomepageScreen(
+                                    topicshow: _topic,
+                                  )));
                     },
                     child: Center(
                       child: Container(
@@ -490,6 +490,7 @@ class _EditListState extends State<EditList> {
                                     )));
                       }
                     },
+                    // ปุ่มแก้ไขรายการ
                     child: Container(
                       margin: EdgeInsets.only(
                           left: Wscreen * W50,
@@ -520,7 +521,7 @@ class _EditListState extends State<EditList> {
                             style: GoogleFonts.getFont("Mali",
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: Hscreen * H18),
+                                fontSize: Hscreen * H14),
                           ),
                         ),
                       ),

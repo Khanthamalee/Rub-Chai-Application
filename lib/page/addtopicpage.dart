@@ -8,6 +8,8 @@ import 'package:incomeandexpansesapp/page/homepagescreen.dart';
 import 'package:incomeandexpansesapp/page/topicwidget/dialogtopic.dart';
 import 'package:provider/provider.dart';
 
+import '../gsheet_CRUD.dart';
+
 class AddTopicPage extends StatefulWidget {
   const AddTopicPage({super.key});
 
@@ -33,6 +35,7 @@ class _AddTopicPageState extends State<AddTopicPage> {
 
     return Scaffold(body: Consumer(
         builder: (BuildContext context, FinanceProvider provider, widget) {
+      readDatafromGSheet();
       bool enabledtopicshow = false;
       provider.returnlistTopic(provider.FinanceList);
       return Stack(
@@ -586,6 +589,17 @@ class _MyWidgetState extends State<AlertdialogAddTopic> {
                                 Provider.of<FinanceProvider>(context,
                                     listen: false);
                             provider.addFinaceList(data);
+                            InsertDataIntoGSheet([
+                              {
+                                "Topic": topic,
+                                "Date": DateTime.now().toString(),
+                                "Name": name,
+                                "Income": type == "รายรับ" ? amount : "",
+                                "Expense": type == "รายจ่าย" ? amount : "",
+                                "Balance": "",
+                                "Note": note,
+                              }
+                            ]);
 
                             //Navigator.pop(context);
                             Navigator.push(
