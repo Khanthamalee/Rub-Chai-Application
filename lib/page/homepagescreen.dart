@@ -12,6 +12,8 @@ import 'package:incomeandexpansesapp/page/staticpagescreen.dart';
 import 'package:provider/provider.dart';
 import 'package:sembast/sembast.dart';
 
+import '../gsheet_CRUD.dart';
+
 class HomepageScreen extends StatefulWidget {
   String? topicshow;
   HomepageScreen({super.key, required this.topicshow});
@@ -80,6 +82,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
             Container(
               child: Column(
                 children: [
+                  //แถบหัวข้อบัญชี ลิงค์กลับ และลิงค์กราฟสถิติ
                   Expanded(
                     flex: 2,
                     child: Container(
@@ -209,6 +212,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                       ),
                     ),
                   ),
+                  //ค้นหาวันที่และปประวัติทั้งหมด
                   Expanded(
                     flex: 2,
                     child: Padding(
@@ -336,6 +340,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                       ),
                     ),
                   ),
+                  //โชวรายการในบัญชี
                   Expanded(
                     flex: 9,
                     child: Padding(
@@ -519,7 +524,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                                           H20,
                                                                   width:
                                                                       Wscreen *
-                                                                          W15,
+                                                                          W20,
                                                                   decoration: BoxDecoration(
                                                                       borderRadius: BorderRadius.only(topLeft: Radius.circular(Hscreen * H20), topRight: Radius.circular(Hscreen * H20), bottomLeft: Radius.circular(Hscreen * H20), bottomRight: Radius.circular(Hscreen * H20)),
                                                                       image: DecorationImage(
@@ -548,21 +553,23 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                                               H14),
                                                                 ),
                                                               ]),
-                                                              SizedBox(
-                                                                height:
-                                                                    Hscreen *
-                                                                        H5,
-                                                              ),
+                                                              // SizedBox(
+                                                              //   height:
+                                                              //       Hscreen *
+                                                              //           H5,
+                                                              // ),
                                                               Row(
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsets.all(
-                                                                        Hscreen *
-                                                                            H8),
+                                                                    padding: EdgeInsets.only(
+                                                                        top: Hscreen *
+                                                                            H5,
+                                                                        left: Wscreen *
+                                                                            W20),
                                                                     child:
                                                                         SizedBox(
                                                                       width: Wscreen *
-                                                                          W230,
+                                                                          W200,
                                                                       child:
                                                                           Text(
                                                                         "${data.name}",
@@ -583,7 +590,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                                   Container(
                                                                     width:
                                                                         Wscreen *
-                                                                            W100,
+                                                                            W80,
                                                                     child: Text(
                                                                       "${data.amount} บาท",
                                                                       maxLines:
@@ -607,6 +614,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                             ],
                                                           ),
                                                         )
+                                                      // มีข้อมูล หรือค้นหาโดยใช้วันที่เจอ
                                                       : SizedBox(
                                                           width: Wscreen * W340,
                                                           child: Column(
@@ -717,6 +725,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                               }),
                     ),
                   ),
+                  //ปุ่มเพิ่มรายการในบัญชี
                   Expanded(
                     flex: 2,
                     child: result.isEmpty && results.isEmpty
@@ -779,6 +788,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                             ),
                           ),
                   ),
+                  //แถบรายการรวมรายรับ ราบจ่าย คงเหลือ
                   Expanded(
                     flex: 4,
                     child: SingleChildScrollView(
@@ -961,6 +971,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 }
 
+//เพิ่มรายการภายในบัญชี
 class Alertdialog extends StatefulWidget {
   String? topicshow;
   Alertdialog({super.key, required this.topicshow});
@@ -1404,6 +1415,25 @@ class _AlertdialogState extends State<Alertdialog> {
                             context,
                             listen: false);
                         provider.addFinaceList(data);
+                        InsertDataIntoGSheet([
+                          {
+                            "Topic": _topicshow,
+                            "Date": DateTime(
+                              dateTime.year,
+                              dateTime.month,
+                              dateTime.day,
+                              dateTime.hour,
+                              dateTime.minute,
+                            ).toString(),
+                            "Name": name,
+                            "Income":
+                                type == "รายรับ" ? double.parse(amount) : "",
+                            "Expense":
+                                type == "รายจ่าย" ? double.parse(amount) : "",
+                            "Balance": "",
+                            "Note": note,
+                          }
+                        ]);
 
                         //Navigator.pop(context);
                         Navigator.push(
