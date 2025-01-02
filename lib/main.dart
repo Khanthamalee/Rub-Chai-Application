@@ -4,8 +4,11 @@ import 'package:incomeandexpansesapp/page/Provider/financeProvider.dart';
 import 'package:incomeandexpansesapp/page/addtopicpage.dart';
 import 'package:provider/provider.dart';
 import 'package:incomeandexpansesapp/colors.dart';
+import 'gsheet_setup.dart';
 
-void main() {
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized;
+  await GSheetsinit();
   runApp(MyApp());
 }
 
