@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:incomeandexpansesapp/DMstatic.dart';
@@ -25,6 +27,7 @@ class _AddTopicPageState extends State<AddTopicPage> {
 
     //เรียก initdata ที่ FinanceProvider
     Provider.of<FinanceProvider>(context, listen: false).initData();
+    print("start");
   }
 
   bool enabledaddtopic = false;
@@ -35,9 +38,10 @@ class _AddTopicPageState extends State<AddTopicPage> {
 
     return Scaffold(body: Consumer(
         builder: (BuildContext context, FinanceProvider provider, widget) {
-      readDatafromGSheet();
       bool enabledtopicshow = false;
-      provider.returnlistTopic(provider.FinanceList);
+      provider.returnlistTopic(provider.FinanceList, provider.dataFromGsheet);
+      provider.FinanceList;
+      provider.dataFromGsheet;
       return Stack(
         children: [
           Container(
@@ -109,6 +113,7 @@ class _AddTopicPageState extends State<AddTopicPage> {
                                   await Future.delayed(
                                       const Duration(milliseconds: 200));
                                   provider.FinanceList;
+                                  provider.dataFromGsheet;
                                   showDialog(
                                       context: context,
                                       barrierDismissible: true,
@@ -137,7 +142,8 @@ class _AddTopicPageState extends State<AddTopicPage> {
                             ),
                             Expanded(
                               flex: 6,
-                              child: provider.FinanceList.isEmpty
+                              child: provider.FinanceList.isEmpty &&
+                                      provider.dataFromGsheet.isEmpty
                                   ? Center(
                                       child: Container(
                                           height: Hscreen * H200,
@@ -421,6 +427,18 @@ class _MyWidgetState extends State<AlertdialogAddTopic> {
 
   bool enabledbuttontopic = false;
   bool enabledX = false;
+  // final _chars = "AFbkdbkAFoklfksn6523552ccsfevcx254fgthgf51Asf]gd3e";
+  // final Random _rnd = Random();
+  // String? ID;
+  // UniqueIdGenerator() async {
+  //   Random random = await new Random();
+  //   int randomNumber = await random.nextInt(100000);
+
+  //   String getRandomString(int lenght) =>
+  //       String.fromCharCodes(Iterable.generate(
+  //           lenght, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+  //   ID = await "${randomNumber}${getRandomString(10)}";
+  // }
 
   Widget build(BuildContext context) {
     double Hscreen = MediaQuery.of(context).size.height;
@@ -428,7 +446,7 @@ class _MyWidgetState extends State<AlertdialogAddTopic> {
 
     return Consumer(
         builder: (BuildContext context, FinanceProvider provider, widget) {
-      provider.returnlistTopic(provider.FinanceList);
+      provider.returnlistTopic(provider.FinanceList, provider.dataFromGsheet);
       return SingleChildScrollView(
         child: Center(
           child: AlertDialog(
@@ -549,7 +567,8 @@ class _MyWidgetState extends State<AlertdialogAddTopic> {
                           setState(() => enabledbuttontopic = false);
                           await Future.delayed(Duration(milliseconds: 200));
 
-                          provider.returnlistTopic(provider.FinanceList);
+                          provider.returnlistTopic(
+                              provider.FinanceList, provider.dataFromGsheet);
 
                           if (formKey.currentState!.validate() &&
                               provider.setTopic
@@ -593,6 +612,7 @@ class _MyWidgetState extends State<AlertdialogAddTopic> {
                               {
                                 "Topic": topic,
                                 "Date": DateTime.now().toString(),
+                                "Timestamp": DateTime.now().toString(),
                                 "Name": name,
                                 "Income": type == "รายรับ" ? amount : "",
                                 "Expense": type == "รายจ่าย" ? amount : "",

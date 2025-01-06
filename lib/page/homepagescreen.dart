@@ -10,7 +10,6 @@ import 'package:incomeandexpansesapp/page/addtopicpage.dart';
 import 'package:incomeandexpansesapp/page/homepage/edit_delete.dart';
 import 'package:incomeandexpansesapp/page/staticpagescreen.dart';
 import 'package:provider/provider.dart';
-import 'package:sembast/sembast.dart';
 
 import '../gsheet_CRUD.dart';
 
@@ -40,10 +39,11 @@ class _HomepageScreenState extends State<HomepageScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    var _topicshow = widget.topicshow;
+    //var _topicshow = widget.topicshow;
 
     //เรียก initdata ที่ FinanceProvider
     Provider.of<FinanceProvider>(context, listen: false).initData();
+    print("start");
   }
 
   bool enabled = false;
@@ -51,6 +51,50 @@ class _HomepageScreenState extends State<HomepageScreen> {
   bool enabled2 = false;
   bool enabled3 = false;
   bool enabled4 = false;
+
+  void savedLocalAndShowdataFromGsheet(
+      FinanceProvider provider, var _topicshow) {
+    List<FinanceVariable> result = [];
+    if (provider.FinanceList.isNotEmpty) {
+      for (var data in provider.FinanceList) {
+        InsertDataIntoGSheet([
+          {
+            "Id": data.id,
+            "Topic": _topicshow,
+            "Date": data.datetime.toString(),
+            "Timestamp": data.timeStamp.toString(),
+            "Name": data.name,
+            "Income": data.type == "รายรับ"
+                ? double.parse(data.amount.toString())
+                : "",
+            "Expense": data.type == "รายจ่าย"
+                ? double.parse(data.amount.toString())
+                : "",
+            "Balance": "",
+            "Note": data.note,
+          }
+        ]);
+      }
+    } else {
+      for (var data in provider.dataFromGsheet) {
+        if (data["Topic"] == _topicshow) {
+          //print(double.parse(data["Expense"]));
+          FinanceVariable dataArange = FinanceVariable(
+              topic: _topicshow,
+              datetime: DateTime.parse(data["Date"]),
+              timeStamp: DateTime.now(),
+              type: data["Income"] != "" ? "รายรับ" : "รายจ่าย",
+              name: data["Name"],
+              amount: data["Income"] != ""
+                  ? double.parse(data["Income"])
+                  : double.parse(data["Expense"]),
+              note: data["Note"]);
+          result.add(dataArange);
+          //print(result.length);
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,16 +105,9 @@ class _HomepageScreenState extends State<HomepageScreen> {
     return Scaffold(
       body: Consumer(
           builder: (BuildContext context, FinanceProvider provider, widget) {
-        List<FinanceVariable> result = [];
-        for (var data in provider.FinanceList) {
-          if (data.topic == _topicshow) {
-            result.add(data);
-          }
-        }
+        savedLocalAndShowdataFromGsheet(provider, _topicshow);
+        provider.returnlistTopic( provider.dataFromGsheet);
         print("เข้ามาหน้า homepage");
-        print(result);
-        print(provider.FinanceList.length);
-        print("results : $results");
 
         return Stack(
           children: [

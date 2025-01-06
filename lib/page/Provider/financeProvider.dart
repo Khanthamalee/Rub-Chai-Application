@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:incomeandexpansesapp/database/finance_db.dart';
 
+import '../../gsheet_CRUD.dart';
+
 class FinanceVariable {
-  int? id;
+  String? id;
   String? topic;
   DateTime? datetime;
   DateTime? timeStamp;
@@ -21,13 +23,66 @@ class FinanceVariable {
       this.note});
 }
 
+class finance {
+  String? id;
+  String? topic;
+  String? date;
+  String? timestamp;
+  String? name;
+  double? income;
+  double? expense;
+  double? balance;
+  String? note;
+
+  finance(
+      {this.id,
+      this.topic,
+      this.date,
+      this.timestamp,
+      this.name,
+      this.income,
+      this.expense,
+      this.balance,
+      this.note});
+
+  finance.fromJson(Map<String, dynamic> json) {
+    id = json['Id'];
+    topic = json['Topic'];
+    name = json['Name'];
+    date = json['Date'];
+    timestamp = json['Timestamp'];
+    income = json['Income'];
+    expense = json['Expense'];
+    balance = json['Balance'];
+    note = json['Note'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['Id'] = this.id;
+    data['Topic'] = this.topic;
+    data['Date'] = this.date;
+    data['Timestamp'] = this.timestamp;
+    data['Name'] = this.name;
+    data['Income'] = this.income;
+    data['Expense'] = this.expense;
+    data['Balance'] = this.balance;
+    data['Note'] = this.note;
+    return data;
+  }
+}
+
 class FinanceProvider with ChangeNotifier {
   //keep data json
   List<FinanceVariable> FinanceList = [];
+  List<Map<String, dynamic>> dataFromGsheet = [];
 
   //get FinanceList
   List<FinanceVariable> getFinanceList() {
     return FinanceList;
+  }
+
+  List<dynamic> getdataFromGsheet() {
+    return dataFromGsheet;
   }
 
   double SumExpenses = 0.0;
@@ -48,7 +103,14 @@ class FinanceProvider with ChangeNotifier {
     var db = FinanceDB(dbname: 'finance.db');
     //ดึงข้อมูลมาแสดง
     FinanceList = await db.LoadAllData();
-    returnlistTopic(FinanceList);
+    dataFromGsheet = [];
+    await readDatafromGSheet();
+
+    for (var r in DataFromGsheet) {
+      dataFromGsheet.add(r);
+    }
+    print(dataFromGsheet.runtimeType);
+    returnlistTopic(FinanceList, dataFromGsheet);
 
     SumExpenses = sumExpense(FinanceList);
     SumIncome = sumIncome(FinanceList);
@@ -59,17 +121,33 @@ class FinanceProvider with ChangeNotifier {
 
 //1. function บัญชี
   //1.1 Arange Topic for Read บัญชี
-  Future returnlistTopic(List<FinanceVariable> FinanceList) async {
+  Future returnlistTopic(
+       List<dynamic> dataFromGsheet) async {
     var db = FinanceDB(dbname: 'finance.db');
     //บันทึกข้อมูล
     //await db.InsertData(data);
     FinanceList = await db.LoadAllData();
-    if (FinanceList.isNotEmpty) {
+
+    dataFromGsheet = [];
+    for (var r in DataFromGsheet) {
+      dataFromGsheet.add(r);
+    }
+    print("FinanceList : $FinanceList");
+
+    if (FinanceList.isEmpty || dataFromGsheet.isNotEmpty) {
+      setTopic = Set();
+      for (var r in dataFromGsheet) {
+        var topicfromGS = r["Topic"];
+        setTopic.addAll([topicfromGS.toString()]);
+      }
+    } else if (FinanceList.isNotEmpty && dataFromGsheet.isNotEmpty) {
       setTopic = Set();
       for (var listdata in FinanceList) {
-        var topic = listdata.topic;
-
-        setTopic.addAll([topic.toString()]);
+        for (var r in dataFromGsheet) {
+          var topic = listdata.topic;
+          var topicfromGS = r["Topic"];
+          setTopic.addAll([topic.toString(), topicfromGS.toString()]);
+        }
       }
     } else {
       setTopic = Set();
@@ -82,15 +160,20 @@ class FinanceProvider with ChangeNotifier {
     var db = FinanceDB(dbname: 'finance.db');
     for (var data in FinanceList) {
       if (data.topic == dataTopic) {
-        int? index = data.id;
+        String? index = data.id;
 
         //ลบข้อมูล
-        await db.deleteData(index!);
+        await db.deleteData(index);
 
         //ดึงข้อมูลมาแสดง
         FinanceList = await db.LoadAllData();
+        readDatafromGSheet();
+        dataFromGsheet = [];
+        for (var r in DataFromGsheet) {
+          dataFromGsheet.add(r);
+        }
 
-        returnlistTopic(FinanceList);
+        returnlistTopic(FinanceList, dataFromGsheet);
         //แจ้งเตือน Comsumer
         notifyListeners();
       }
@@ -108,8 +191,13 @@ class FinanceProvider with ChangeNotifier {
 
         //ดึงข้อมูลมาแสดง
         FinanceList = await db.LoadAllData();
+        readDatafromGSheet();
+        dataFromGsheet = [];
+        for (var r in DataFromGsheet) {
+          dataFromGsheet.add(r);
+        }
 
-        returnlistTopic(FinanceList);
+        returnlistTopic(FinanceList, dataFromGsheet);
         //แจ้งเตือน Comsumer
         notifyListeners();
       }
@@ -127,6 +215,19 @@ class FinanceProvider with ChangeNotifier {
     var db = FinanceDB(dbname: 'finance.db');
     //บันทึกข้อมูล
     await db.InsertData(data);
+    InsertDataIntoGSheet([
+      {
+        "ID":data.id
+        "Topic": topic,
+        "Date": DateTime.now().toString(),
+        "Timestamp": DateTime.now().toString(),
+        "Name": name,
+        "Income": type == "รายรับ" ? amount : "",
+        "Expense": type == "รายจ่าย" ? amount : "",
+        "Balance": "",
+        "Note": note,
+      }
+    ]);
 
     //ดึงข้อมูลมาแสดง
     FinanceList = await db.LoadAllData();
@@ -153,7 +254,7 @@ class FinanceProvider with ChangeNotifier {
         //ดึงข้อมูลมาแสดง
         FinanceList = await db.LoadAllData();
 
-        returnlistTopic(FinanceList);
+        returnlistTopic(FinanceList, dataFromGsheet);
         //แจ้งเตือน Comsumer
         notifyListeners();
       }
@@ -173,7 +274,7 @@ class FinanceProvider with ChangeNotifier {
       var type = element.type;
 
       if (type == "รายรับ") {
-        print("รายรับ : ${element.name}");
+        //print("รายรับ : ${element.name}");
         incomedata.add(element);
       } else if (type == "Nodata") {
         incomedata.add(element);
@@ -202,7 +303,7 @@ class FinanceProvider with ChangeNotifier {
       var type = element.type;
 
       if (type == "รายจ่าย") {
-        print("รายจ่าย  : ${element.name}");
+        //print("รายจ่าย  : ${element.name}");
         expensesdata.add(element);
       } else if (type == "Nodata") {
         expensesdata.add(element);

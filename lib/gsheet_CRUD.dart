@@ -1,38 +1,20 @@
 import 'gsheet_setup.dart';
 
 InsertDataIntoGSheet(data) async {
-  print(data[0]["topic"]);
-  // if (data == "รายรับ") {
-  //   data = {
-  //     "topic": data.topic,
-  //     "date": DateTime.now(),
-  //     "name": data.name,
-  //     "typeI": data.type,
-  //     "typeE": "",
-  //     "amount": data.amount,
-  //     "note": data.note
-  //   };
-  // } else {
-  //   data = {
-  //     "topic": data.topic,
-  //     "date": DateTime.now(),
-  //     "name": data.name,
-  //     "typeI": "",
-  //     "typeE": data.type,
-  //     "amount": data.amount,
-  //     "note": data.note
-  //   };
-  // }
   await GsheetCRUDUserDetails!.values.map.appendRows(data);
   print("Data stored");
 }
 
 List DataFromGsheet = [];
-
-void readDatafromGSheet() async {
+Map<String, List<dynamic>> Data = {};
+readDatafromGSheet() async {
   DataFromGsheet = (await GsheetCRUDUserDetails!.values.map.allRows())!;
-  print("Data Fetched");
-  print("DataFromGsheet : ${DataFromGsheet[0]["Date"].runtimeType}");
-  print(
-      "DataFromGsheet : ${DateTime.fromMicrosecondsSinceEpoch(double.parse(DataFromGsheet[0]["Date"]).toInt())}");
+  print("data fetcheds");
+}
+
+UpdateDatafromGSheet(int id, Map<String, dynamic> database) async {
+  print("id, $id");
+  print("database : $database");
+  await GsheetCRUDUserDetails!.values.map.insertRowByKey(id, database);
+  print("Data updated");
 }

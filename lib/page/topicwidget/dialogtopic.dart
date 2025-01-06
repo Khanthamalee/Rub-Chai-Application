@@ -7,6 +7,8 @@ import 'package:incomeandexpansesapp/page/Provider/financeProvider.dart';
 import 'package:incomeandexpansesapp/page/addtopicpage.dart';
 import 'package:provider/provider.dart';
 
+import '../../gsheet_CRUD.dart';
+
 class UpdateTopic extends StatefulWidget {
   String? topic;
   UpdateTopic({super.key, required this.topic});
@@ -37,7 +39,7 @@ class _UpdateTopicState extends State<UpdateTopic> {
     var _topic = widget.topic;
     return Consumer(
         builder: (BuildContext context, FinanceProvider provider, widget) {
-      provider.returnlistTopic(provider.FinanceList);
+      provider.returnlistTopic(provider.FinanceList, provider.dataFromGsheet);
       List<int> idchangetopic = [];
       List<dynamic> listdata = [];
       for (var data in provider.FinanceList) {
@@ -45,6 +47,27 @@ class _UpdateTopicState extends State<UpdateTopic> {
           var idchange = data.id;
           idchangetopic.add(idchange!);
           listdata.add(data);
+        }
+      }
+      for (var data in provider.dataFromGsheet) {
+        //print(data["Id"].runtimeType);
+        if (data["Topic"] == _topic) {
+          var idchange = double.parse(data["Id"]).toInt();
+          print(idchange.runtimeType);
+          idchangetopic.add(idchange);
+          print(idchangetopic);
+          print(data["Income"]);
+          print(data["Expense"]);
+          print(data["Balance"]);
+          finance dataobject = finance(
+              id: idchange,
+              topic: data["Topic"],
+              name: data["Name"],
+              income: double.parse(data["Income"]),
+              expense: double.parse(data["Expense"]),
+              balance: double.parse(data["Balance"]),
+              note: data["Note"]);
+          listdata.add(dataobject);
         }
       }
 
@@ -168,7 +191,9 @@ class _UpdateTopicState extends State<UpdateTopic> {
                         setState(() => enabledbuttontopic = false);
                         await Future.delayed(Duration(milliseconds: 200));
 
-                        provider.returnlistTopic(provider.FinanceList);
+                        provider.returnlistTopic(
+                            provider.FinanceList, provider.dataFromGsheet);
+                        print(provider.setTopic);
 
                         if (formKey.currentState!.validate() &&
                             provider.setTopic.contains(topicController.text) ==
@@ -190,6 +215,8 @@ class _UpdateTopicState extends State<UpdateTopic> {
                           FinanceProvider provider =
                               Provider.of<FinanceProvider>(context,
                                   listen: false);
+                          print("save button before for loop");
+                          print(listdata);
 
                           for (var i in listdata) {
                             print("i : ${i.id}");
@@ -198,12 +225,27 @@ class _UpdateTopicState extends State<UpdateTopic> {
                             FinanceVariable data = FinanceVariable(
                                 id: i.id,
                                 topic: topicController.text,
-                                datetime: i.datetime,
+                                datetime: i.Date,
                                 timeStamp: i.timeStamp,
                                 type: i.type,
                                 name: i.name,
                                 amount: i.amount,
                                 note: i.note);
+                            Map<String, dynamic> database = {
+                              "Id": i.id,
+                              "Topic": topicController.text,
+                              "Name": i.name,
+                              "Income": i.type == "รายรับ"
+                                  ? double.parse(i.amount)
+                                  : 0.00,
+                              "Expense": i.type == "รายจ่าย"
+                                  ? double.parse(i.amount)
+                                  : 0.00,
+                              "Balance": 0.00,
+                              "Note": i.note
+                            };
+                            print("before UpdateDatafromGSheet() :$database");
+                            UpdateDatafromGSheet(i.id, database);
                             provider.UpdateTopic(i.id, data);
                           }
 

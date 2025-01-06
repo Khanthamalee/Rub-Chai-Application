@@ -5,6 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
+import '../gsheet_CRUD.dart';
+
 class FinanceDB {
   //บริการเกี่ยวกับข้อมูล
   String dbname; //ตั้งชื่อฐานข้อมูล
@@ -100,7 +102,7 @@ class FinanceDB {
 
       financeList.add(
         FinanceVariable(
-            id: id,
+            id: id.toString(),
             topic: topic,
             datetime: dtConvert,
             timeStamp: tsConvert,
@@ -163,7 +165,7 @@ class FinanceDB {
 
       financeList.add(
         FinanceVariable(
-            id: id,
+            id: id.toString(),
             topic: topic,
             datetime: dtConvert,
             timeStamp: tsConvert,
