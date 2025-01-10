@@ -105,8 +105,10 @@ class _HomepageScreenState extends State<HomepageScreen> {
     return Scaffold(
       body: Consumer(
           builder: (BuildContext context, FinanceProvider provider, widget) {
-        savedLocalAndShowdataFromGsheet(provider, _topicshow);
-        provider.returnlistTopic( provider.dataFromGsheet);
+        List<FinanceVariable> result = [];
+        for (var data in provider.FinanceList) {
+          result.add(data);
+        }
         print("เข้ามาหน้า homepage");
 
         return Stack(
