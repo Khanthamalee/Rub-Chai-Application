@@ -7,6 +7,8 @@ import 'package:incomeandexpansesapp/page/Provider/financeProvider.dart';
 import 'package:incomeandexpansesapp/page/addtopicpage.dart';
 import 'package:provider/provider.dart';
 
+import '../../gsheet_CRUD.dart';
+
 class UpdateTopic extends StatefulWidget {
   String? topic;
   UpdateTopic({super.key, required this.topic});
@@ -24,9 +26,9 @@ class _UpdateTopicState extends State<UpdateTopic> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    var _topic = widget.topic;
+
     //เรียก initdata ที่ FinanceProvider
-    Provider.of<FinanceProvider>(context, listen: false).initData();
+    //Provider.of<FinanceProvider>(context, listen: false).initData();
   }
 
   bool enabledbuttontopic = false;
@@ -37,16 +39,18 @@ class _UpdateTopicState extends State<UpdateTopic> {
     var _topic = widget.topic;
     return Consumer(
         builder: (BuildContext context, FinanceProvider provider, widget) {
-      provider.returnlistTopic(provider.FinanceList);
-      List<int> idchangetopic = [];
+      provider.getdatafromGsheet();
+      List<String> idchangetopic = [];
       List<dynamic> listdata = [];
-      for (var data in provider.FinanceList) {
+      for (var data in provider.datafromGsheet) {
         if (data.topic == _topic) {
           var idchange = data.id;
           idchangetopic.add(idchange!);
           listdata.add(data);
         }
       }
+      print(provider.getdatafromGsheet());
+      print("listdata $listdata");
 
       return Center(
         child: AlertDialog(
@@ -111,7 +115,7 @@ class _UpdateTopicState extends State<UpdateTopic> {
                     //หัวข้อเพิ่มข้อมูล
                     Center(
                       child: Text(
-                        "เพิ่มบัญชี",
+                        "แก้ไขชื่อบัญชี",
                         style: GoogleFonts.getFont(Fonttype.Mali,
                             fontSize: Hscreen * H18,
                             color: AppColors.textgrey,
@@ -167,52 +171,65 @@ class _UpdateTopicState extends State<UpdateTopic> {
                         await Future.delayed(Duration(milliseconds: 200));
                         setState(() => enabledbuttontopic = false);
                         await Future.delayed(Duration(milliseconds: 200));
+                        setState(() {
+                          if (formKey.currentState!.validate() &&
+                              provider.setTopic
+                                      .contains(topicController.text) ==
+                                  true) {
+                            showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    backgroundColor: AppColors.bglevel1,
+                                    title: Text("บัญชีนี้มีในระบบแล้ว"),
+                                    content: Text("กรุณาใช้ชื่อบัญชีใหม่ค่ะ"),
+                                  );
+                                });
+                          } else if (formKey.currentState!.validate() &&
+                              provider.setTopic
+                                      .contains(topicController.text) ==
+                                  false) {
+                            //call provider
+                            FinanceProvider provider =
+                                Provider.of<FinanceProvider>(context,
+                                    listen: false);
 
-                        provider.returnlistTopic(provider.FinanceList);
-
-                        if (formKey.currentState!.validate() &&
-                            provider.setTopic.contains(topicController.text) ==
-                                true) {
-                          showDialog(
-                              context: context,
-                              barrierDismissible: true,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  backgroundColor: AppColors.bglevel1,
-                                  title: Text("บัญชีนี้มีในระบบแล้ว"),
-                                  content: Text("กรุณาใช้ชื่อบัญชีใหม่ค่ะ"),
-                                );
-                              });
-                        } else if (formKey.currentState!.validate() &&
-                            provider.setTopic.contains(topicController.text) ==
-                                false) {
-                          //call provider
-                          FinanceProvider provider =
-                              Provider.of<FinanceProvider>(context,
-                                  listen: false);
-
-                          for (var i in listdata) {
-                            print("i : ${i.id}");
-                            // if (i == provider.FinanceList)
-                            //เตรียม Json ลง provider
-                            FinanceVariable data = FinanceVariable(
-                                id: i.id,
+                            for (var d in listdata) {
+                              print("i : ${d.id}");
+                              // if (i == provider.FinanceList)
+                              //เตรียม Json ลง provider
+                              finance data = finance(
+                                id: d.id,
                                 topic: topicController.text,
-                                datetime: i.datetime,
-                                timeStamp: i.timeStamp,
-                                type: i.type,
-                                name: i.name,
-                                amount: i.amount,
-                                note: i.note);
-                            provider.UpdateTopic(i.id, data);
-                          }
+                                date: d.date,
+                                timestamp: d.timestamp,
+                                name: d.name,
+                                income: d.income,
+                                expense: d.expense,
+                                balance: d.balance,
+                                note: d.note,
+                              );
 
-                          //Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AddTopicPage()));
-                        }
+                              print(
+                                  "id = ${d.id} , topic = ${topicController.text}");
+
+                              provider.UpdateTopic(d.id, data);
+
+                              provider.setTopic.add(topicController.text);
+                              provider.setTopic.remove(d.topic);
+                              print("provider.setTopic ${provider.setTopic}");
+                            }
+
+                            Navigator.pop(context);
+
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AddTopicPage()));
+                            setState(() {});
+                          }
+                        });
                       },
                       child: Container(
                         margin: EdgeInsets.only(

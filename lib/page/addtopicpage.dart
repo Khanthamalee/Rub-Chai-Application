@@ -21,7 +21,7 @@ class _AddTopicPageState extends State<AddTopicPage> {
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
+    //super.initState();
 
     //เรียก initdata ที่ FinanceProvider
     Provider.of<FinanceProvider>(context, listen: false).initData();
@@ -35,9 +35,9 @@ class _AddTopicPageState extends State<AddTopicPage> {
 
     return Scaffold(body: Consumer(
         builder: (BuildContext context, FinanceProvider provider, widget) {
-      readDatafromGSheet();
       bool enabledtopicshow = false;
-      provider.returnlistTopic(provider.FinanceList);
+      provider.getdatafromGsheet();
+      provider.returnlistTopic(provider.datafromGsheet);
       return Stack(
         children: [
           Container(
@@ -137,7 +137,7 @@ class _AddTopicPageState extends State<AddTopicPage> {
                             ),
                             Expanded(
                               flex: 6,
-                              child: provider.FinanceList.isEmpty
+                              child: provider.datafromGsheet.isEmpty
                                   ? Center(
                                       child: Container(
                                           height: Hscreen * H200,
@@ -428,7 +428,8 @@ class _MyWidgetState extends State<AlertdialogAddTopic> {
 
     return Consumer(
         builder: (BuildContext context, FinanceProvider provider, widget) {
-      provider.returnlistTopic(provider.FinanceList);
+      print("addtopicpage");
+      provider.returnlistTopic(provider.datafromGsheet);
       return SingleChildScrollView(
         child: Center(
           child: AlertDialog(
@@ -549,7 +550,7 @@ class _MyWidgetState extends State<AlertdialogAddTopic> {
                           setState(() => enabledbuttontopic = false);
                           await Future.delayed(Duration(milliseconds: 200));
 
-                          provider.returnlistTopic(provider.FinanceList);
+                          provider.returnlistTopic(provider.datafromGsheet);
 
                           if (formKey.currentState!.validate() &&
                               provider.setTopic
@@ -575,31 +576,22 @@ class _MyWidgetState extends State<AlertdialogAddTopic> {
                             double amount = 50;
                             var note = "note";
                             //เตรียม Json ลง provider
-                            FinanceVariable data = FinanceVariable(
-                                topic: topic,
-                                datetime: DateTime.now(),
-                                timeStamp: DateTime.now(),
-                                type: type,
-                                name: name,
-                                amount: amount,
-                                note: note);
+                            finance data = finance(
+                              topic: topic,
+                              date: DateTime.now().toString(),
+                              timestamp: DateTime.now().toString(),
+                              name: name,
+                              income: type == "รายรับ" ? amount : 0.00,
+                              expense: type == "รายจ่าย" ? amount : 0.00,
+                              balance: amount,
+                              note: note,
+                            );
 
                             //call provider
                             FinanceProvider provider =
                                 Provider.of<FinanceProvider>(context,
                                     listen: false);
-                            provider.addFinaceList(data);
-                            InsertDataIntoGSheet([
-                              {
-                                "Topic": topic,
-                                "Date": DateTime.now().toString(),
-                                "Name": name,
-                                "Income": type == "รายรับ" ? amount : "",
-                                "Expense": type == "รายจ่าย" ? amount : "",
-                                "Balance": "",
-                                "Note": note,
-                              }
-                            ]);
+                            provider.saveDataToGoogleSheet(data);
 
                             //Navigator.pop(context);
                             Navigator.push(

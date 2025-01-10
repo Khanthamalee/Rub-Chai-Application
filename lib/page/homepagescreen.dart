@@ -23,7 +23,7 @@ class HomepageScreen extends StatefulWidget {
 }
 
 class _HomepageScreenState extends State<HomepageScreen> {
-  List<FinanceVariable> results = [];
+  List<finance> results = [];
   // double? SumExpenses;
   // double? SumIncome;
   @override
@@ -61,16 +61,16 @@ class _HomepageScreenState extends State<HomepageScreen> {
     return Scaffold(
       body: Consumer(
           builder: (BuildContext context, FinanceProvider provider, widget) {
-        List<FinanceVariable> result = [];
-        for (var data in provider.FinanceList) {
+        List<finance> result = [];
+        for (var data in provider.datafromGsheet) {
           if (data.topic == _topicshow) {
             result.add(data);
           }
         }
         print("เข้ามาหน้า homepage");
-        print(result);
-        print(provider.FinanceList.length);
-        print("results : $results");
+        //print(result);
+        //print(provider.datafromGsheet.length);
+        //print("results : $results");
 
         return Stack(
           children: [
@@ -283,7 +283,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                       "${dateTime.year}-${dateTime.month.toString().padLeft(2, "0")}-${dateTime.day.toString().padLeft(2, "0")}";
 
                                   results = result
-                                      .where((element) => element.datetime
+                                      .where((element) => element.date
                                           .toString()
                                           .toLowerCase()
                                           .contains(datetime))
@@ -293,14 +293,16 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                   //provider.sumIncome(results);
                                   if (results.isEmpty) {
                                     results = [
-                                      FinanceVariable(
-                                          datetime: DateTime(dateTime.year,
-                                              dateTime.month, dateTime.day),
-                                          timeStamp: DateTime(dateTime.year,
-                                              dateTime.month, dateTime.day),
-                                          type: "Nodata",
+                                      finance(
+                                          date: DateTime(dateTime.year,
+                                                  dateTime.month, dateTime.day)
+                                              .toString(),
+                                          timestamp: DateTime(dateTime.year,
+                                                  dateTime.month, dateTime.day)
+                                              .toString(),
+                                          income: 0.0,
+                                          expense: 0.0,
                                           name: "ไม่มีรายการในวันนี้ค่ะ",
-                                          amount: 00,
                                           note: "")
                                     ];
 
@@ -372,7 +374,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                   ? result.length
                                   : results.length,
                               itemBuilder: (context, index) {
-                                FinanceVariable data = results.isEmpty
+                                finance data = results.isEmpty
                                     ? result[index]
                                     : results[index];
 
@@ -411,16 +413,23 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                         builder: (BuildContext
                                                             context) {
                                                           return EditList(
-                                                              id: data.id,
+                                                              id: data.id
+                                                                  .toString(),
                                                               topic: _topicshow,
                                                               datetime:
-                                                                  data.datetime,
+                                                                  data.date,
                                                               timeStamp: data
-                                                                  .timeStamp,
-                                                              type: data.type,
+                                                                  .timestamp,
+                                                              type: data.income !=
+                                                                      0.0
+                                                                  ? "รายรับ"
+                                                                  : "รายจ่าย",
                                                               name: data.name,
-                                                              amount:
-                                                                  data.amount,
+                                                              amount: data.income !=
+                                                                      0.0
+                                                                  ? data.income
+                                                                  : data
+                                                                      .expense,
                                                               note: data.note);
                                                         });
                                                   },
@@ -448,17 +457,21 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                     if (results.isEmpty) {
                                                       var dataindex =
                                                           result[index];
-                                                      provider
-                                                          .delateFinanceVariable(
-                                                              dataindex);
+                                                      print(
+                                                          "dataindex  result: ${dataindex.id}");
+                                                      // deleteDatafromGSheet(
+                                                      //     dataindex.id
+                                                      //         .toString());
                                                     } else {
                                                       var dataindex =
                                                           results[index];
-                                                      provider
-                                                          .delateFinanceVariable(
-                                                              dataindex);
-                                                      results.remove(
-                                                          results[index]);
+                                                      print(
+                                                          "dataindex  results: ${dataindex.id}");
+                                                      // deleteDatafromGSheet(
+                                                      //     dataindex.id
+                                                      //         .toString());
+                                                      // results.remove(
+                                                      //     results[index]);
                                                     }
 
                                                     //provider.FinanceList;
@@ -512,7 +525,8 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
                                                 children: [
-                                                  data.type == "Nodata"
+                                                  data.income == 0.0 &&
+                                                          data.expense == 0.0
                                                       ? SizedBox(
                                                           width: Wscreen * W340,
                                                           child: Column(
@@ -528,9 +542,9 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                                   decoration: BoxDecoration(
                                                                       borderRadius: BorderRadius.only(topLeft: Radius.circular(Hscreen * H20), topRight: Radius.circular(Hscreen * H20), bottomLeft: Radius.circular(Hscreen * H20), bottomRight: Radius.circular(Hscreen * H20)),
                                                                       image: DecorationImage(
-                                                                          image: data.type == "รายรับ"
+                                                                          image: data.income != 0.0
                                                                               ? const AssetImage("assets/like.png")
-                                                                              : data.type == "รายจ่าย"
+                                                                              : data.expense != 0.0
                                                                                   ? const AssetImage("assets/dislike.png")
                                                                                   : const AssetImage("assets/empty-box.png"))),
                                                                 ),
@@ -540,7 +554,8 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                                           W5,
                                                                 ),
                                                                 Text(
-                                                                  "${data.datetime!.year}/${data.datetime!.month}/${data.datetime!.day} เวลา ${data.datetime!.hour.toString().padLeft(2, "0")}:${data.datetime!.minute.toString().padLeft(2, "0")}",
+                                                                  "${data.date}",
+                                                                  //"${data.datetime!.year}/${data.datetime!.month}/${data.datetime!.day} เวลา ${data.datetime!.hour.toString().padLeft(2, "0")}:${data.datetime!.minute.toString().padLeft(2, "0")}",
                                                                   style: GoogleFonts.getFont(
                                                                       "Mali",
                                                                       color: Colors
@@ -592,7 +607,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                                         Wscreen *
                                                                             W80,
                                                                     child: Text(
-                                                                      "${data.amount} บาท",
+                                                                      "${data.income != 0.0 ? data.income : data.expense} บาท",
                                                                       maxLines:
                                                                           1,
                                                                       overflow:
@@ -630,9 +645,9 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                                   decoration: BoxDecoration(
                                                                       //borderRadius: BorderRadius.only(topLeft: Radius.circular(Hscreen * H10), topRight: Radius.circular(Hscreen * H10), bottomLeft: Radius.circular(Hscreen * H10), bottomRight: Radius.circular(Hscreen * H10)),
                                                                       image: DecorationImage(
-                                                                          image: data.type == "รายรับ"
+                                                                          image: data.income != 0.0
                                                                               ? const AssetImage("assets/like.png")
-                                                                              : data.type == "รายจ่าย"
+                                                                              : data.expense != 0.0
                                                                                   ? const AssetImage("assets/dislike.png")
                                                                                   : const AssetImage("assets/empty-box.png"))),
                                                                 ),
@@ -642,7 +657,8 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                                           W10,
                                                                 ),
                                                                 Text(
-                                                                  "${data.datetime!.year}/${data.datetime!.month}/${data.datetime!.day} เวลา ${data.datetime!.hour.toString().padLeft(2, "0")}:${data.datetime!.minute.toString().padLeft(2, "0")}",
+                                                                  "${data.date}",
+                                                                  //"${data.date!.year}/${data.datetime!.month}/${data.datetime!.day} เวลา ${data.datetime!.hour.toString().padLeft(2, "0")}:${data.datetime!.minute.toString().padLeft(2, "0")}",
                                                                   style: GoogleFonts.getFont(
                                                                       "Mali",
                                                                       color: Colors
@@ -691,7 +707,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                                                         Wscreen *
                                                                             W100,
                                                                     child: Text(
-                                                                      "${data.amount} บาท",
+                                                                      "${data.income != 0.0 ? data.income : data.expense} บาท",
                                                                       maxLines:
                                                                           1,
                                                                       overflow:
@@ -1395,45 +1411,29 @@ class _AlertdialogState extends State<Alertdialog> {
                         var note = noteController.text;
 
                         //เตรียม Json ลง provider
-                        FinanceVariable data = FinanceVariable(
+                        finance data = finance(
                             topic: _topicshow,
-                            datetime: DateTime(
-                              dateTime.year,
-                              dateTime.month,
-                              dateTime.day,
-                              dateTime.hour,
-                              dateTime.minute,
-                            ),
-                            timeStamp: DateTime.now(),
-                            type: type,
-                            name: name,
-                            amount: double.parse(amount),
-                            note: note);
-
-                        //call provider
-                        FinanceProvider provider = Provider.of<FinanceProvider>(
-                            context,
-                            listen: false);
-                        provider.addFinaceList(data);
-                        InsertDataIntoGSheet([
-                          {
-                            "Topic": _topicshow,
-                            "Date": DateTime(
+                            date: DateTime(
                               dateTime.year,
                               dateTime.month,
                               dateTime.day,
                               dateTime.hour,
                               dateTime.minute,
                             ).toString(),
-                            "Name": name,
-                            "Income":
-                                type == "รายรับ" ? double.parse(amount) : "",
-                            "Expense":
-                                type == "รายจ่าย" ? double.parse(amount) : "",
-                            "Balance": "",
-                            "Note": note,
-                          }
-                        ]);
+                            timestamp: DateTime.now().toString(),
+                            name: name,
+                            expense:
+                                type == "รายรับ" ? double.parse(amount) : 0.00,
+                            income:
+                                type == "รายจ่าย" ? double.parse(amount) : 0.00,
+                            balance: double.parse(amount),
+                            note: note);
+
+                        //call provider
+                        FinanceProvider provider = Provider.of<FinanceProvider>(
+                            context,
+                            listen: false);
+                        provider.saveDataToGoogleSheet(data);
 
                         //Navigator.pop(context);
                         Navigator.push(

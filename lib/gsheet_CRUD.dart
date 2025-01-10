@@ -1,38 +1,53 @@
 import 'gsheet_setup.dart';
 
-InsertDataIntoGSheet(data) async {
-  print(data[0]["topic"]);
-  // if (data == "รายรับ") {
-  //   data = {
-  //     "topic": data.topic,
-  //     "date": DateTime.now(),
-  //     "name": data.name,
-  //     "typeI": data.type,
-  //     "typeE": "",
-  //     "amount": data.amount,
-  //     "note": data.note
-  //   };
-  // } else {
-  //   data = {
-  //     "topic": data.topic,
-  //     "date": DateTime.now(),
-  //     "name": data.name,
-  //     "typeI": "",
-  //     "typeE": data.type,
-  //     "amount": data.amount,
-  //     "note": data.note
-  //   };
-  // }
-  await GsheetCRUDUserDetails!.values.map.appendRows(data);
+//U
+UpdateDataIntoGSheet(finance data) async {
+  print("in datafromGsheet ${data.id}");
+  await _getWorkSheet?.values.map.insertRowByKey("${data.id}", {
+    'Id': data.id,
+    'Topic': data.topic,
+    'Date': data.date,
+    'Timestamp': data.timestamp,
+    'Name': data.name,
+    'Income': data.income,
+    'Expense': data.expense,
+    'Balance': data.balance,
+    'Note': data.note
+  });
+  print("Data Update");
+  readDatafromGSheet();
+}
+
+//C
+Insert(finance data) async {
+  print(data.topic);
+  await _getWorkSheet!.values.map.appendRows([
+    {
+      'Id': data.id,
+      'Topic': data.topic,
+      'Date': data.date,
+      'Timestamp': data.timestamp,
+      'Name': data.name,
+      'Income': data.income,
+      'Expense': data.expense,
+      'Balance': data.balance,
+      'Note': data.note
+    }
+  ]);
   print("Data stored");
 }
 
 List DataFromGsheet = [];
+List<finance> datafromGsheet = [];
 
-void readDatafromGSheet() async {
-  DataFromGsheet = (await GsheetCRUDUserDetails!.values.map.allRows())!;
-  print("Data Fetched");
-  print("DataFromGsheet : ${DataFromGsheet[0]["Date"].runtimeType}");
-  print(
-      "DataFromGsheet : ${DateTime.fromMicrosecondsSinceEpoch(double.parse(DataFromGsheet[0]["Date"]).toInt())}");
+//R
+readDatafromGSheet() async {
+  DataFromGsheet = (await _getWorkSheet!.values.map.allRows())!;
+}
+
+//D
+deleteDatafromGSheet(String key) async {
+  final index = await _getWorkSheet!.values.rowIndexOf(key);
+  await _getWorkSheet!.deleteRow(index);
+  print("Row Deleted");
 }

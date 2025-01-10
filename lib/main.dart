@@ -9,7 +9,7 @@ import 'gsheet_setup.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized;
-  await GSheetsinit();
+  await UserSheetApi.GSheetsinit();
   runApp(MyApp());
 }
 
@@ -79,7 +79,6 @@ class InitState extends State<SplashScreen> {
 
   Widget initWidget() {
     double Hscreen = MediaQuery.of(context).size.height;
-   
 
     return Scaffold(
         body: Stack(children: [

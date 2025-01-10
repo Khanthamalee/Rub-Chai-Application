@@ -3,15 +3,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:incomeandexpansesapp/DMstatic.dart';
 import 'package:incomeandexpansesapp/colors.dart';
 import 'package:incomeandexpansesapp/font.dart';
+import 'package:incomeandexpansesapp/gsheet_CRUD.dart';
 import 'package:incomeandexpansesapp/page/Provider/financeProvider.dart';
 import 'package:incomeandexpansesapp/page/homepagescreen.dart';
 import 'package:provider/provider.dart';
 
 class EditList extends StatefulWidget {
-  int? id;
+  String? id;
   String? topic;
-  DateTime? datetime;
-  DateTime? timeStamp;
+  String? datetime;
+  String? timeStamp;
   String? type;
   String? name;
   double? amount;
@@ -64,7 +65,7 @@ class _EditListState extends State<EditList> {
     double Hscreen = MediaQuery.of(context).size.height;
     double Wscreen = MediaQuery.of(context).size.width;
     var _topic = widget.topic;
-    DateTime? _datetime = widget.datetime;
+    String? _datetime = widget.datetime;
     var _id = widget.id;
     var _name = widget.name;
     var _amount = widget.amount;
@@ -399,7 +400,8 @@ class _EditListState extends State<EditList> {
                           child: Text(
                             datetimechange == true
                                 ? "${dateTime.year}/${dateTime.month}/${dateTime.day} เวลา ${dateTime.hour.toString().padLeft(2, "0")}:${dateTime.minute.toString().padLeft(2, "0")}"
-                                : "${_datetime!.year}/${_datetime.month}/${_datetime.day} เวลา ${_datetime.hour.toString().padLeft(2, "0")}:${_datetime.minute.toString().padLeft(2, "0")}",
+                                //: "${_datetime!.year}/${_datetime.month}/${_datetime.day} เวลา ${_datetime.hour.toString().padLeft(2, "0")}:${_datetime.minute.toString().padLeft(2, "0")}"
+                                : "${_datetime}",
                             style: GoogleFonts.getFont("Mali",
                                 color: AppColors.textblue,
                                 fontWeight: FontWeight.w400,
@@ -466,19 +468,26 @@ class _EditListState extends State<EditList> {
                           ? _note
                           : noteController.text;
 
-                      for (var i in provider.FinanceList) {
+                      for (var i in provider.datafromGsheet) {
                         if (i.id == _id) {
                           //เตรียม Json ลง provider
-                          FinanceVariable data = FinanceVariable(
-                              id: i.id,
-                              topic: i.topic,
-                              datetime: datetimeedit,
-                              timeStamp: i.timeStamp,
-                              type: type,
-                              name: name,
-                              amount: double.parse(amount.toString()),
-                              note: note);
-                          provider.UpdateTopic(i.id!, data);
+                          finance data = finance(
+                            id: _id,
+                            topic: _topic,
+                            date: datetimeedit.toString(),
+                            timestamp: i.timestamp,
+                            name: name,
+                            income: type == "รายรับ"
+                                ? double.parse(amount.toString())
+                                : 0.00,
+                            expense: type == "รายจ่าย"
+                                ? double.parse(amount.toString())
+                                : 0.00,
+                            balance: double.parse(amount.toString()),
+                            note: note,
+                          );
+                          print("updateDataToGoogleSheet");
+                          provider.updateDataToGoogleSheet(data);
                         }
 
                         //Navigator.pop(context);
