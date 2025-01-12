@@ -46,6 +46,8 @@ dependencies:
   path: ^1.9.0
   flutter_launcher_icons: ^0.14.2
   gsheets: ^0.5.0
+  googleapis_auth: ^1.0.0
+  
 
 dev_dependencies:
   flutter_test:

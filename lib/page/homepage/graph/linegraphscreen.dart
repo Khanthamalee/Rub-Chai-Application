@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:incomeandexpansesapp/DMstatic.dart';
 import 'package:incomeandexpansesapp/colors.dart';
+import 'package:incomeandexpansesapp/database/financedata.dart';
 import 'package:incomeandexpansesapp/font.dart';
 import 'package:incomeandexpansesapp/page/Provider/financeProvider.dart';
-import 'package:incomeandexpansesapp/page/homepagescreen.dart';
-import 'package:incomeandexpansesapp/page/homepiegraph.dart';
-import 'package:incomeandexpansesapp/page/makegraph.dart';
-import 'package:incomeandexpansesapp/page/pie_chart.dart';
+import 'package:incomeandexpansesapp/page/homepage/graph/piegraphscreen.dart';
+import 'package:incomeandexpansesapp/page/homepage/graph/makegraph.dart';
 import 'package:provider/provider.dart';
 
+import '../homepagescreen.dart';
+
 class Staticmoney extends StatefulWidget {
-  List result;
+  List<Finance>? financeInTopic;
   String? topic;
   Staticmoney({
     super.key,
-    required this.result,
+    required this.financeInTopic,
     required this.topic,
   });
 
@@ -24,21 +25,34 @@ class Staticmoney extends StatefulWidget {
 }
 
 class _HomepageScreenState extends State<Staticmoney> {
-  List typegraph = ["วัน", "สัปดาห์", "เดือน", "ปี"];
+  List typegraph = [
+    "วัน",
+    "สัปดาห์",
+    "เดือน",
+    "ปี",
+  ];
   int index_color = 0;
   bool enabled2 = false;
   bool enabled1 = false;
+  List<Finance>? _financeInTopic;
+  String? _topic;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _financeInTopic = widget.financeInTopic;
+    _topic = widget.topic;
+  }
 
   @override
   Widget build(BuildContext context) {
     double Hscreen = MediaQuery.of(context).size.height;
     double Wscreen = MediaQuery.of(context).size.width;
-    var _result = widget.result;
-    var _topic = widget.topic;
 
     print("เข้ามาหน้า กราฟ Staticmoney ");
-    print("_result :$_result ");
-    List results = [];
+    print("_financeInTopic :$_financeInTopic ");
+    List<Finance>? _financeInTopics = [];
 
     return Scaffold(
       body: Stack(
@@ -83,12 +97,13 @@ class _HomepageScreenState extends State<Staticmoney> {
                                   setState(() => enabled2 = false);
                                   await Future.delayed(
                                       Duration(milliseconds: 200));
-                                  Navigator.pop(context);
+                                  //Navigator.pop(context);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => HomepageScreen(
-                                                topicshow: _topic,
+                                                topic: _topic,
+                                                financeInTopic: _financeInTopic,
                                               )));
                                 },
                                 child: Container(
@@ -135,7 +150,8 @@ class _HomepageScreenState extends State<Staticmoney> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => HomePieChart(
-                                              result: _result, topic: _topic)));
+                                              financeInTopic: _financeInTopic!,
+                                              topic: _topic)));
                                 },
                                 child: Center(
                                   child: Container(
@@ -226,17 +242,23 @@ class _HomepageScreenState extends State<Staticmoney> {
                   child: Consumer(
                       builder: (context, FinanceProvider provider, widget) {
                     if (index_color == 0) {
-                      for (var data in _result) {
-                        var datetimeInDB =
-                            "${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}-${data.datetime.day.toString().padLeft(2, "0")}";
-                        var datetimeDay =
+                      for (var data in _financeInTopic!) {
+                        //print(_financeInTopic);
+                        String datetimeInDB =
+                            "${data.date.toString().substring(0, 10)}";
+                        //"${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}-${data.datetime.day.toString().padLeft(2, "0")}";
+                        String datetimeDay =
                             "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, "0")}-${DateTime.now().day.toString().padLeft(2, "0")}";
+                        // print("datetimeInDB : $datetimeInDB");
+                        // print("datetimeDay : $datetimeDay");
+
                         if (datetimeInDB == datetimeDay) {
-                          results.add(data);
+                          _financeInTopics.add(data);
                         }
+                        // print("_financeInTopics : ${_financeInTopics}");
                       }
                     } else if (index_color == 1) {
-                      for (var data in _result) {
+                      for (var data in _financeInTopic!) {
                         List dayinweek = [];
                         for (var i = 0; i <= 6; i++) {
                           var dodayEnd =
@@ -247,37 +269,47 @@ class _HomepageScreenState extends State<Staticmoney> {
                         }
 
                         var datetimeInDB =
-                            "${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}-${data.datetime.day.toString().padLeft(2, "0")}";
+                            "${data.date.toString().substring(0, 10)}";
+                        //"${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}-${data.datetime.day.toString().padLeft(2, "0")}";
 
                         for (var day in dayinweek) {
                           var dayweekstring =
                               "${day.year}-${day.month.toString().padLeft(2, "0")}-${day.day.toString().padLeft(2, "0")}";
 
                           if (datetimeInDB == dayweekstring) {
-                            results.add(data);
+                            _financeInTopics.add(data);
+                            //print(dayweekstring);
+                            //print(
+                            //"_financeInTopics.lenght : ${_financeInTopics.length}");
                           }
                         }
                       }
                     } else if (index_color == 2) {
-                      for (var data in _result) {
-                        var datetimeInDB =
-                            "${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}";
-                        var datetimeMonth =
+                      for (var data in _financeInTopic!) {
+                        String datetimeInDB =
+                            "${data.date.toString().substring(0, 7)}";
+                        // "${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}";
+                        String datetimeMonth =
                             "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, "0")}";
                         if (datetimeInDB == datetimeMonth) {
-                          results.add(data);
+                          _financeInTopics.add(data);
+                          //print("_financeInTopics : ${_financeInTopics}");
                         }
                       }
                     } else if (index_color == 3) {
-                      for (var data in _result) {
-                        var datetimeInDB = "${data.datetime.year}";
+                      for (var data in _financeInTopic!) {
+                        var datetimeInDB =
+                            "${data.date.toString().substring(0, 4)}";
                         var datetimeMonth = "${DateTime.now().year}";
                         if (datetimeInDB == datetimeMonth) {
-                          results.add(data);
+                          _financeInTopics.add(data);
+                          //print(
+                          // "_financeInTopics.lenght : ${_financeInTopics.length}");
                         }
                       }
                     }
-                    return results.isEmpty || results.length < 2
+                    return _financeInTopics.isEmpty ||
+                            _financeInTopics.length < 2
                         ? Center(
                             child: Container(
                                 height: Hscreen * H200,
@@ -337,7 +369,7 @@ class _HomepageScreenState extends State<Staticmoney> {
                                         bottom: Hscreen * H5,
                                       ),
                                       child: Graph(
-                                        result: _result,
+                                        financeInTopic: _financeInTopic!,
                                         index_color: index_color,
                                       ),
                                     ),
@@ -346,9 +378,9 @@ class _HomepageScreenState extends State<Staticmoney> {
                               ),
                               SliverList(
                                 delegate: SliverChildBuilderDelegate(
-                                    childCount: results.length,
+                                    childCount: _financeInTopics.length,
                                     (BuildContext context, index) {
-                                  FinanceVariable data = results[index];
+                                  Finance data = _financeInTopics[index];
 
                                   return Container(
                                     padding: EdgeInsets.only(
@@ -382,7 +414,7 @@ class _HomepageScreenState extends State<Staticmoney> {
                                                           Radius.circular(
                                                               Hscreen * H20)),
                                                   image: DecorationImage(
-                                                      image: data.type == "รายรับ"
+                                                      image: data.income != "0"
                                                           ? const AssetImage(
                                                               "assets/like.png")
                                                           : const AssetImage(
@@ -419,7 +451,8 @@ class _HomepageScreenState extends State<Staticmoney> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      "${data.datetime!.year}/${data.datetime!.month}/${data.datetime!.day} เวลา ${data.datetime!.hour}:${data.datetime!.minute}",
+                                                      "${data.date.toString().substring(0, 19)}",
+                                                      //"${data.datetime!.year}/${data.datetime!.month}/${data.datetime!.day} เวลา ${data.datetime!.hour}:${data.datetime!.minute}",
                                                       // Text(
                                                       //   "${DateFormat.yMMMMd().format(datainput()[index].date!)} ${datainput()[index].time}",
                                                       style:
@@ -438,7 +471,7 @@ class _HomepageScreenState extends State<Staticmoney> {
                                                       height: Hscreen * H5,
                                                     ),
                                                     Text(
-                                                      "${data.name} ${data.amount} บาท",
+                                                      "${data.name} ${data.income != "0" ? data.income : data.expense} บาท",
                                                       style:
                                                           GoogleFonts.getFont(
                                                               Fonttype.Mali,

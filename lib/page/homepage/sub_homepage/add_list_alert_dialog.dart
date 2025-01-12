@@ -1,45 +1,30 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:incomeandexpansesapp/DMstatic.dart';
 import 'package:incomeandexpansesapp/colors.dart';
+import 'package:incomeandexpansesapp/database/financedata.dart';
 import 'package:incomeandexpansesapp/font.dart';
+import 'package:incomeandexpansesapp/gsheet_setup.dart';
 import 'package:incomeandexpansesapp/page/Provider/financeProvider.dart';
-import 'package:incomeandexpansesapp/page/homepagescreen.dart';
+import 'package:incomeandexpansesapp/page/homepage/homepagescreen.dart';
 import 'package:provider/provider.dart';
 
-class EditList extends StatefulWidget {
-  int? id;
+class AddListAlertdialog extends StatefulWidget {
   String? topic;
-  DateTime? datetime;
-  DateTime? timeStamp;
-  String? type;
-  String? name;
-  double? amount;
-  String? note;
-  EditList(
-      {super.key,
-      this.id,
-      required this.topic,
-      this.datetime,
-      this.timeStamp,
-      this.type,
-      this.name,
-      this.amount,
-      this.note});
+  List<Finance>? financeInTopic;
+
+  AddListAlertdialog(
+      {super.key, required this.topic, required this.financeInTopic});
 
   @override
-  State<EditList> createState() => _EditListState();
+  State<AddListAlertdialog> createState() => _AddListAlertdialogState();
 }
 
-class _EditListState extends State<EditList> {
-  var dropdowntypevalue = "";
+class _AddListAlertdialogState extends State<AddListAlertdialog> {
+  String dropdowntypevalue = "รายรับ";
   List<String> typeList = ["รายรับ", "รายจ่าย"];
-  @override
-  void initState() {
-    // TODO: implement initState
-    dropdowntypevalue = widget.type!;
-    super.initState();
-  }
 
   //ใช้ในการดึงข้อมูลจาก Form ลงใน database
   final formKey = GlobalKey<FormState>();
@@ -56,19 +41,40 @@ class _EditListState extends State<EditList> {
   bool enabled4 = false;
   bool enabled5 = false;
   bool enabled6 = false;
-  //bool enabled7 = false;
-  bool datetimechange = false;
+  String? _topic;
+  List<Finance>? _financeInTopic;
+  String? ID;
+  final String _chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+  Random _rnd = Random();
 
   @override
+  initState() {
+    super.initState();
+    _topic = widget.topic;
+    _financeInTopic = widget.financeInTopic;
+  }
+
+  UniqueIdGenerator() {
+    Random random = new Random();
+    int randomNumber = random.nextInt(10000000);
+    String getRandomString(int length) =>
+        String.fromCharCodes(Iterable.generate(
+            length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+    ID = '${randomNumber}${getRandomString(10)}';
+  }
+
+  Future insertFinance(Finance data) async {
+    final finance = [data];
+    final jsonFinance = finance.map((finance) => finance.toJson()).toList();
+    await UserSheetApi.insert(jsonFinance);
+    print("Data stored");
+  }
+
   Widget build(BuildContext context) {
     double Hscreen = MediaQuery.of(context).size.height;
     double Wscreen = MediaQuery.of(context).size.width;
-    var _topic = widget.topic;
-    DateTime? _datetime = widget.datetime;
-    var _id = widget.id;
-    var _name = widget.name;
-    var _amount = widget.amount;
-    var _note = widget.note;
+    //var _topicshow = widget.topic;
 
     return Center(
       child: AlertDialog(
@@ -94,13 +100,7 @@ class _EditListState extends State<EditList> {
                       await Future.delayed(Duration(milliseconds: 200));
                       setState(() => enabled4 = false);
                       await Future.delayed(Duration(milliseconds: 200));
-                      //Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomepageScreen(
-                                    topicshow: _topic,
-                                  )));
+                      Navigator.pop(context);
                     },
                     child: Center(
                       child: Container(
@@ -195,7 +195,7 @@ class _EditListState extends State<EditList> {
                             bottom: Hscreen * H5,
                             left: Wscreen * W15,
                             right: Wscreen * W15),
-                        child: DropdownButtonFormField<String>(
+                        child: DropdownButton<String>(
                           value: dropdowntypevalue,
                           dropdownColor: Colors.pink[100],
                           borderRadius:
@@ -210,23 +210,19 @@ class _EditListState extends State<EditList> {
                               color: AppColors.textblue,
                               fontWeight: FontWeight.w400,
                               fontSize: Hscreen * H16),
-                          focusColor: AppColors.addpink,
+                          underline: Container(
+                            height: Hscreen * H2,
+                            color: AppColors.addpink,
+                          ),
                           onChanged: (value) {
                             // This is called when the user selects an item.
-                            print("value : $value");
 
-                            dropdowntypevalue = value.toString();
-                            print("dropdowntypevalue : $dropdowntypevalue");
+                            setState(() {
+                              dropdowntypevalue = value.toString();
+                            });
                           },
                           items: typeList
                               .map<DropdownMenuItem<String>>((String newvalue) {
-                            print("newvalue : $newvalue");
-                            print(
-                                "dropdowntypevalue in items : $dropdowntypevalue");
-
-                            //dropdowntypevalue = newvalue;
-                            print(
-                                "dropdowntypevalue n items  : $dropdowntypevalue");
                             return DropdownMenuItem<String>(
                               value: newvalue,
                               child: Text(newvalue),
@@ -256,11 +252,17 @@ class _EditListState extends State<EditList> {
                             right: Wscreen * W5),
                         child: TextFormField(
                           controller: nameController,
+                          validator: (String? str) {
+                            if (str!.isEmpty) {
+                              return "กรุณาเพิ่มรายการ";
+                            }
+                            return null;
+                          },
                           keyboardType: TextInputType.text,
                           maxLines: 3,
                           cursorColor: AppColors.addpink,
                           decoration: InputDecoration(
-                              hintText: "${_name}",
+                              hintText: "รายการ",
                               hintStyle: GoogleFonts.getFont(Fonttype.Mali,
                                   fontSize: Hscreen * H16,
                                   color: AppColors.textblue,
@@ -291,10 +293,19 @@ class _EditListState extends State<EditList> {
                             right: Wscreen * W5),
                         child: TextFormField(
                           controller: amountController,
+                          validator: (String? str) {
+                            if (str!.isEmpty) {
+                              return "กรุณาระบุจำนวนเงิน";
+                            }
+                            if (double.parse(str) <= 0) {
+                              return "กรุณาระบุตัวเลขเป็นค่าบวก";
+                            }
+                            return null;
+                          },
                           keyboardType: TextInputType.number,
                           cursorColor: AppColors.addpink,
                           decoration: InputDecoration(
-                              hintText: "${_amount}",
+                              hintText: "จำนวนเงิน",
                               hintStyle: GoogleFonts.getFont(Fonttype.Mali,
                                   fontSize: Hscreen * H16,
                                   color: AppColors.textblue,
@@ -322,7 +333,7 @@ class _EditListState extends State<EditList> {
                           children: [
                             Container(
                               child: Text(
-                                "แก้ไขเวลาที่ทำการซื้อ-ขาย",
+                                "เลือกเวลาที่ทำการซื้อ-ขาย",
                                 style: GoogleFonts.getFont("Mali",
                                     color: AppColors.textblue,
                                     fontWeight: FontWeight.bold,
@@ -397,9 +408,7 @@ class _EditListState extends State<EditList> {
                         child: Container(
                           height: Hscreen * H40,
                           child: Text(
-                            datetimechange == true
-                                ? "${dateTime.year}/${dateTime.month}/${dateTime.day} เวลา ${dateTime.hour.toString().padLeft(2, "0")}:${dateTime.minute.toString().padLeft(2, "0")}"
-                                : "${_datetime!.year}/${_datetime.month}/${_datetime.day} เวลา ${_datetime.hour.toString().padLeft(2, "0")}:${_datetime.minute.toString().padLeft(2, "0")}",
+                            "${dateTime.year}/${dateTime.month}/${dateTime.day} เวลา ${dateTime.hour.toString().padLeft(2, "0")}:${dateTime.minute.toString().padLeft(2, "0")}",
                             style: GoogleFonts.getFont("Mali",
                                 color: AppColors.textblue,
                                 fontWeight: FontWeight.w400,
@@ -432,7 +441,7 @@ class _EditListState extends State<EditList> {
                           keyboardType: TextInputType.text,
                           cursorColor: AppColors.addpink,
                           decoration: InputDecoration(
-                              hintText: "${_note}",
+                              hintText: "หมายเหตุ",
                               hintStyle: GoogleFonts.getFont(Fonttype.Mali,
                                   fontSize: Hscreen * H16,
                                   color: AppColors.textblue,
@@ -441,7 +450,7 @@ class _EditListState extends State<EditList> {
                               focusedBorder: InputBorder.none),
                         ),
                       )),
-                  //แก้ไขข้อมูล
+                  //ปุ่มบันทึกข้อมูล
                   GestureDetector(
                     onTap: () async {
                       setState(() => enabled6 = true);
@@ -449,48 +458,43 @@ class _EditListState extends State<EditList> {
                       setState(() => enabled6 = false);
                       await Future.delayed(Duration(milliseconds: 200));
 
-                      FinanceProvider provider =
-                          Provider.of<FinanceProvider>(context, listen: false);
+                      if (formKey.currentState!.validate()) {
+                        var type = dropdowntypevalue.toString();
+                        var name = nameController.text;
+                        var amount = amountController.text;
+                        var note = noteController.text;
 
-                      var type = dropdowntypevalue.toString();
-                      print("dropdowntypevalue : $dropdowntypevalue");
-                      var name = nameController.text.isEmpty
-                          ? _name
-                          : nameController.text;
-                      var datetimeedit = dateTime;
+                        UniqueIdGenerator();
+                        //เตรียม Json ลง provider
+                        Finance finance = Finance(
+                            id: ID,
+                            topic: _topic,
+                            date: DateTime(
+                              dateTime.year,
+                              dateTime.month,
+                              dateTime.day,
+                              dateTime.hour,
+                              dateTime.minute,
+                            ).toString(),
+                            timestamp: DateTime.now().toString(),
+                            name: name,
+                            income: type == "รายรับ" ? amount : "0",
+                            expense: type == "รายจ่าย" ? amount : "0",
+                            balance: amount,
+                            note: note);
 
-                      var amount = amountController.text.isEmpty
-                          ? _amount
-                          : amountController.text;
-                      var note = noteController.text.isEmpty
-                          ? _note
-                          : noteController.text;
+                        insertFinance(finance);
+                        _financeInTopic?.insert(0, finance);
 
-                      for (var i in provider.FinanceList) {
-                        if (i.id == _id) {
-                          //เตรียม Json ลง provider
-                          FinanceVariable data = FinanceVariable(
-                              id: i.id,
-                              topic: i.topic,
-                              datetime: datetimeedit,
-                              timeStamp: i.timeStamp,
-                              type: type,
-                              name: name,
-                              amount: double.parse(amount.toString()),
-                              note: note);
-                          provider.UpdateTopic(i.id!, data);
-                        }
-
-                        //Navigator.pop(context);
+                        Navigator.pop(context);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => HomepageScreen(
-                                      topicshow: _topic,
-                                    )));
+                                    topic: _topic,
+                                    financeInTopic: _financeInTopic)));
                       }
                     },
-                    // ปุ่มแก้ไขรายการ
                     child: Container(
                       margin: EdgeInsets.only(
                           left: Wscreen * W50,
@@ -517,11 +521,11 @@ class _EditListState extends State<EditList> {
                             right: Wscreen * W5),
                         child: Center(
                           child: Text(
-                            "แก้ไขรายการ",
+                            "บันทึก",
                             style: GoogleFonts.getFont("Mali",
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: Hscreen * H14),
+                                fontSize: Hscreen * H18),
                           ),
                         ),
                       ),
@@ -546,9 +550,6 @@ class _EditListState extends State<EditList> {
         DateTime(date.year, date.month, date.day, time.hour, time.minute);
     setState(() {
       this.dateTime = dateTime;
-      // var datetime =
-      //     "${dateTime.year}/${dateTime.month}/${dateTime.day} เวลา ${dateTime.hour.toString().padLeft(2, "0")}:${dateTime.minute.toString().padLeft(2, "0")}";
-      datetimechange = true;
     });
   }
 

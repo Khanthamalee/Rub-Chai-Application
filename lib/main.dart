@@ -9,7 +9,7 @@ import 'gsheet_setup.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized;
-  await GSheetsinit();
+  await UserSheetApi.GSheetsinit();
   runApp(MyApp());
 }
 

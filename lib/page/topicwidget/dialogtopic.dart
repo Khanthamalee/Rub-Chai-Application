@@ -3,10 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:incomeandexpansesapp/DMstatic.dart';
 import 'package:incomeandexpansesapp/colors.dart';
 import 'package:incomeandexpansesapp/font.dart';
+import 'package:incomeandexpansesapp/gsheet_setup.dart';
 import 'package:incomeandexpansesapp/page/Provider/financeProvider.dart';
 import 'package:incomeandexpansesapp/page/addtopicpage.dart';
 import 'package:provider/provider.dart';
 
+import '../../database/financedata.dart';
 import '../../gsheet_CRUD.dart';
 
 class UpdateTopic extends StatefulWidget {
@@ -21,14 +23,41 @@ class _UpdateTopicState extends State<UpdateTopic> {
   @override
   final formKey = GlobalKey<FormState>();
   TextEditingController topicController = TextEditingController();
+  List<Finance> finances = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    var _topic = widget.topic;
+    getFinance();
     //เรียก initdata ที่ FinanceProvider
-    Provider.of<FinanceProvider>(context, listen: false).initData();
+    //Provider.of<FinanceProvider>(context, listen: false).initData();
+  }
+
+  //ReadData
+  Future getFinance() async {
+    final allfinances = await UserSheetApi.getAll();
+    arrange(allfinances);
+    Provider.of<FinanceProvider>(context, listen: false)
+        .returnlistTopic(finances);
+    //print("finances in initState : ${finances.length}");
+
+    setState(() {
+      this.finances = finances;
+    });
+  }
+
+  Future updateFinance(String id, Map<String, dynamic> list) async {
+    await UserSheetApi.updateByID(id, list);
+    await getFinance();
+  }
+
+  List<Finance> arrange(List<Finance> financeInTopic) {
+    for (var data in financeInTopic) {
+      finances.insert(0, data);
+    }
+    //print("finances : ${finances[0].date}");
+    return finances;
   }
 
   bool enabledbuttontopic = false;
@@ -39,37 +68,20 @@ class _UpdateTopicState extends State<UpdateTopic> {
     var _topic = widget.topic;
     return Consumer(
         builder: (BuildContext context, FinanceProvider provider, widget) {
-      provider.returnlistTopic(provider.FinanceList, provider.dataFromGsheet);
-      List<int> idchangetopic = [];
-      List<dynamic> listdata = [];
-      for (var data in provider.FinanceList) {
+      provider.getdatafromGsheet();
+      List<String> idchangetopic = [];
+      List<Finance> listdata = [];
+      for (var data in finances) {
+        //print(data.topic);
         if (data.topic == _topic) {
           var idchange = data.id;
           idchangetopic.add(idchange!);
           listdata.add(data);
+          //print("data.timestamp ${data.timestamp}");
         }
       }
-      for (var data in provider.dataFromGsheet) {
-        //print(data["Id"].runtimeType);
-        if (data["Topic"] == _topic) {
-          var idchange = double.parse(data["Id"]).toInt();
-          print(idchange.runtimeType);
-          idchangetopic.add(idchange);
-          print(idchangetopic);
-          print(data["Income"]);
-          print(data["Expense"]);
-          print(data["Balance"]);
-          finance dataobject = finance(
-              id: idchange,
-              topic: data["Topic"],
-              name: data["Name"],
-              income: double.parse(data["Income"]),
-              expense: double.parse(data["Expense"]),
-              balance: double.parse(data["Balance"]),
-              note: data["Note"]);
-          listdata.add(dataobject);
-        }
-      }
+
+      //print("listdata $listdata");
 
       return Center(
         child: AlertDialog(
@@ -134,7 +146,7 @@ class _UpdateTopicState extends State<UpdateTopic> {
                     //หัวข้อเพิ่มข้อมูล
                     Center(
                       child: Text(
-                        "เพิ่มบัญชี",
+                        "แก้ไขชื่อบัญชี",
                         style: GoogleFonts.getFont(Fonttype.Mali,
                             fontSize: Hscreen * H18,
                             color: AppColors.textgrey,
@@ -190,71 +202,59 @@ class _UpdateTopicState extends State<UpdateTopic> {
                         await Future.delayed(Duration(milliseconds: 200));
                         setState(() => enabledbuttontopic = false);
                         await Future.delayed(Duration(milliseconds: 200));
+                        setState(() async {
+                          if (formKey.currentState!.validate() &&
+                              provider.setTopic
+                                      .contains(topicController.text) ==
+                                  true) {
+                            showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    backgroundColor: AppColors.bglevel1,
+                                    title: Text("บัญชีนี้มีในระบบแล้ว"),
+                                    content: Text("กรุณาใช้ชื่อบัญชีใหม่ค่ะ"),
+                                  );
+                                });
+                          } else if (formKey.currentState!.validate() &&
+                              provider.setTopic
+                                      .contains(topicController.text) ==
+                                  false) {
+                            //call provider
+                            FinanceProvider provider =
+                                Provider.of<FinanceProvider>(context,
+                                    listen: false);
 
-                        provider.returnlistTopic(
-                            provider.FinanceList, provider.dataFromGsheet);
-                        print(provider.setTopic);
-
-                        if (formKey.currentState!.validate() &&
-                            provider.setTopic.contains(topicController.text) ==
-                                true) {
-                          showDialog(
-                              context: context,
-                              barrierDismissible: true,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  backgroundColor: AppColors.bglevel1,
-                                  title: Text("บัญชีนี้มีในระบบแล้ว"),
-                                  content: Text("กรุณาใช้ชื่อบัญชีใหม่ค่ะ"),
-                                );
-                              });
-                        } else if (formKey.currentState!.validate() &&
-                            provider.setTopic.contains(topicController.text) ==
-                                false) {
-                          //call provider
-                          FinanceProvider provider =
-                              Provider.of<FinanceProvider>(context,
-                                  listen: false);
-                          print("save button before for loop");
-                          print(listdata);
-
-                          for (var i in listdata) {
-                            print("i : ${i.id}");
-                            // if (i == provider.FinanceList)
-                            //เตรียม Json ลง provider
-                            FinanceVariable data = FinanceVariable(
-                                id: i.id,
+                            for (var d in listdata) {
+                              //print("i : ${d.timestamp}");
+                              // if (i == provider.FinanceList)
+                              //เตรียม Json ลง provider
+                              Finance finance = Finance(
+                                id: d.id,
                                 topic: topicController.text,
-                                datetime: i.Date,
-                                timeStamp: i.timeStamp,
-                                type: i.type,
-                                name: i.name,
-                                amount: i.amount,
-                                note: i.note);
-                            Map<String, dynamic> database = {
-                              "Id": i.id,
-                              "Topic": topicController.text,
-                              "Name": i.name,
-                              "Income": i.type == "รายรับ"
-                                  ? double.parse(i.amount)
-                                  : 0.00,
-                              "Expense": i.type == "รายจ่าย"
-                                  ? double.parse(i.amount)
-                                  : 0.00,
-                              "Balance": 0.00,
-                              "Note": i.note
-                            };
-                            print("before UpdateDatafromGSheet() :$database");
-                            UpdateDatafromGSheet(i.id, database);
-                            provider.UpdateTopic(i.id, data);
+                                date: d.date,
+                                timestamp: d.timestamp.toString(),
+                                name: d.name,
+                                income: d.income,
+                                expense: d.expense,
+                                balance: d.balance,
+                                note: d.note,
+                              );
+                              //print(d.id);
+                              //print(finance.toJson());
+                              await updateFinance(
+                                  d.id.toString(), finance.toJson());
+                            }
+                            print("data updated");
+                            print("provider.setTopic ${provider.setTopic}");
+                            Navigator.pop(context);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AddTopicPage()));
                           }
-
-                          //Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AddTopicPage()));
-                        }
+                        });
                       },
                       child: Container(
                         margin: EdgeInsets.only(

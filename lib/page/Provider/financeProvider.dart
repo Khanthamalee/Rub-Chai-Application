@@ -1,7 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:incomeandexpansesapp/database/finance_db.dart';
 
+import '../../database/financedata.dart';
 import '../../gsheet_CRUD.dart';
+import '../../gsheet_setup.dart';
 
 class FinanceVariable {
   String? id;
@@ -81,8 +85,10 @@ class FinanceProvider with ChangeNotifier {
     return FinanceList;
   }
 
-  List<dynamic> getdataFromGsheet() {
-    return dataFromGsheet;
+  List<Finance> datafromGsheet = [];
+
+  List<Finance> getdatafromGsheet() {
+    return datafromGsheet;
   }
 
   double SumExpenses = 0.0;
@@ -100,183 +106,213 @@ class FinanceProvider with ChangeNotifier {
 
   //แสดงผลเลยถ้า เข้า app
   void initData() async {
+    print("initData");
+
     var db = FinanceDB(dbname: 'finance.db');
     //ดึงข้อมูลมาแสดง
     FinanceList = await db.LoadAllData();
-    dataFromGsheet = [];
-    await readDatafromGSheet();
 
-    for (var r in DataFromGsheet) {
-      dataFromGsheet.add(r);
-    }
-    print(dataFromGsheet.runtimeType);
-    returnlistTopic(FinanceList, dataFromGsheet);
+    //บันทึกข้อมูลใน local ลง GoogleSheet
+    saveDataFromLocalToGoogleSheet();
+    //datafromGsheet = await readDatafromGoogleSheet();
+    print("datafromGsheet in initData $datafromGsheet");
+    print("datafromGsheet.length in initData ${datafromGsheet.length}");
+    //returnlistTopic(datafromGsheet);
 
-    SumExpenses = sumExpense(FinanceList);
-    SumIncome = sumIncome(FinanceList);
+    SumExpenses = sumExpense(datafromGsheet);
+    SumIncome = sumIncome(datafromGsheet);
 
     //แจ้งเตือน Comsumer
     notifyListeners();
   }
 
 //1. function บัญชี
+
   //1.1 Arange Topic for Read บัญชี
-  Future returnlistTopic(
-       List<dynamic> dataFromGsheet) async {
-    var db = FinanceDB(dbname: 'finance.db');
-    //บันทึกข้อมูล
-    //await db.InsertData(data);
-    FinanceList = await db.LoadAllData();
+  // readDatafromGoogleSheet() async {
+  //   DataFromGsheet = await readDatafromGSheet();
+  //   datafromGsheet = [];
 
-    dataFromGsheet = [];
-    for (var r in DataFromGsheet) {
-      dataFromGsheet.add(r);
-    }
-    print("FinanceList : $FinanceList");
+  //   for (var d in DataFromGsheet) {
+  //     Finance data = Finance(
+  //       id: d["Id"],
+  //       topic: d["Topic"],
+  //       date: d["Date"],
+  //       timestamp: d["Timestamp"].toString(),
+  //       name: d["Name"],
+  //       income: double.parse(d["Income"].toString()),
+  //       expense: double.parse(d["Expense"].toString()),
+  //       balance: double.parse(d["Balance"].toString()),
+  //       note: d["Note"],
+  //     );
+  //     datafromGsheet.add(data);
+  //   }
+  //   print("datafromGsheet in readDatafromGSheet $datafromGsheet");
+  // }
 
-    if (FinanceList.isEmpty || dataFromGsheet.isNotEmpty) {
+  returnlistTopic(List<Finance> data) async {
+    setTopic = Set();
+    if (data.isNotEmpty) {
       setTopic = Set();
-      for (var r in dataFromGsheet) {
-        var topicfromGS = r["Topic"];
-        setTopic.addAll([topicfromGS.toString()]);
-      }
-    } else if (FinanceList.isNotEmpty && dataFromGsheet.isNotEmpty) {
-      setTopic = Set();
-      for (var listdata in FinanceList) {
-        for (var r in dataFromGsheet) {
-          var topic = listdata.topic;
-          var topicfromGS = r["Topic"];
-          setTopic.addAll([topic.toString(), topicfromGS.toString()]);
-        }
+      for (var listdata in data) {
+        var topic = listdata.topic;
+
+        setTopic.add(topic.toString());
       }
     } else {
       setTopic = Set();
     }
+    print("setTopic in returnlistTopic :  ${setTopic}");
+    print("returnlistTopic");
   }
 
   //1.2 Delete บัญชี และข้อมูลที่อยู่ในบัญชีทั้งหมด
-  Future daletedataTopic(String dataTopic) async {
-    //เรียก database
-    var db = FinanceDB(dbname: 'finance.db');
-    for (var data in FinanceList) {
-      if (data.topic == dataTopic) {
-        String? index = data.id;
+  // Future daletedataTopic(String dataTopic) async {
+  //   datafromGsheet = [];
+  //   readDatafromGSheet();
+  //   for (var data in datafromGsheet) {
+  //     if (data.topic == dataTopic) {
+  //       String? index = data.id;
+  //       deleteDatafromGSheet(index!);
+  //       returnlistTopic(datafromGsheet);
+  //       notifyListeners();
+  //     }
+  //   }
+  // }
 
-        //ลบข้อมูล
-        await db.deleteData(index);
+  //1.3 แก้ไขข้อมูลบัญชี
+//   void UpdateTopic(String index, Finance data) async {
+// //เรียก database
+//     datafromGsheet = [];
+//     DataFromGsheet = (await GsheetCRUDUserDetails!.values.map.allRows())!;
+//     for (var d in DataFromGsheet) {
+//       Finance data = Finance(
+//         id: d["Id"],
+//         topic: d["Topic"],
+//         date: d["Date"],
+//         timestamp: d["Timestamp"].toString(),
+//         name: d["Name"],
+//         income: double.parse(d["Income"].toString()),
+//         expense: double.parse(d["Expense"].toString()),
+//         balance: double.parse(d["Balance"].toString()),
+//         note: d["Note"],
+//       );
+//       datafromGsheet.add(data);
+//     }
+//     print("index in UpdateTopic : $index");
+//     for (var e in datafromGsheet) {
+//       if (e.id == index) {
+//         //Update data
+//         UpdateDataIntoGSheet(data);
+//         print("data.topic : ${data.topic}");
+//         print("olddata.topic : ${e.topic}");
+//         datafromGsheet.insert(0, data);
+//         datafromGsheet.remove(e);
+//       }
+//     }
 
-        //ดึงข้อมูลมาแสดง
-        FinanceList = await db.LoadAllData();
-        readDatafromGSheet();
-        dataFromGsheet = [];
-        for (var r in DataFromGsheet) {
-          dataFromGsheet.add(r);
-        }
+  //   //ดึงข้อมูลมาแสดง
+  //   print("datafromGsheet after UpdateDataIntoGSheet : $datafromGsheet");
+  //   print(
+  //       "length datafromGsheet after UpdateDataIntoGSheet : ${datafromGsheet.length}");
+  //   for (var e in datafromGsheet) {
+  //     //Update data
+  //     if (e == data.topic) {
+  //       print("e.topic : ${e.topic}");
+  //     } else {
+  //       print("ไม่มี");
+  //     }
+  //   }
+  //   //returnlistTopic(datafromGsheet);
 
-        returnlistTopic(FinanceList, dataFromGsheet);
-        //แจ้งเตือน Comsumer
-        notifyListeners();
-      }
-    }
-  }
-
-  //1.4 แก้ไขข้อมูลบัญชี
-  void UpdateTopic(int index, FinanceVariable data) async {
-//เรียก database
-    var db = FinanceDB(dbname: 'finance.db');
-    for (var e in FinanceList) {
-      if (e.id == index) {
-        //Update data
-        await db.UpdateData(index, data);
-
-        //ดึงข้อมูลมาแสดง
-        FinanceList = await db.LoadAllData();
-        readDatafromGSheet();
-        dataFromGsheet = [];
-        for (var r in DataFromGsheet) {
-          dataFromGsheet.add(r);
-        }
-
-        returnlistTopic(FinanceList, dataFromGsheet);
-        //แจ้งเตือน Comsumer
-        notifyListeners();
-      }
-    }
-  }
+  //   notifyListeners();
+  // }
 
   //1.4 add data to FinanceList and เพิ่มบัญชี และให้ข้อมูลทั้งอยู่อยู่ในรูปแบบเริ่มต้นคือ
+  void saveDataToGoogleSheet(Finance data) async {
+    var _chars = "aSfac205EadlF";
 
-  void addFinaceList(FinanceVariable data) async {
-    // var db = await FinanceDB(dbname: 'finance.db').openDatabase();
-    //ในโทรศัพท์ มันสร้าง db ที่นี่
-    //db : /data/user/0/com.Naudom.incomeandexpansesapphe/finance.db
+    Random _rnd = Random();
+    String? ID;
 
-    //เรียก database
-    var db = FinanceDB(dbname: 'finance.db');
-    //บันทึกข้อมูล
-    await db.InsertData(data);
-    InsertDataIntoGSheet([
-      {
-        "ID":data.id
-        "Topic": topic,
-        "Date": DateTime.now().toString(),
-        "Timestamp": DateTime.now().toString(),
-        "Name": name,
-        "Income": type == "รายรับ" ? amount : "",
-        "Expense": type == "รายจ่าย" ? amount : "",
-        "Balance": "",
-        "Note": note,
-      }
-    ]);
-
-    //ดึงข้อมูลมาแสดง
-    FinanceList = await db.LoadAllData();
-    //FinanceList.insert(0, data);
-
-    //แจ้งเตือน Comsumer
-    notifyListeners();
-  }
-
-  //1.4 ลบข้อมูลในบัญชีรายอัน
-  void delateFinanceVariable(FinanceVariable data) async {
-    //เรียก database
-    var db = FinanceDB(dbname: 'finance.db');
-
-    //int? index = data.id;
-
-    for (var e in FinanceList) {
-      if (data.id == e.id) {
-        int? index = data.id;
-
-        //ลบข้อมูล
-        await db.deleteData(index!);
-
-        //ดึงข้อมูลมาแสดง
-        FinanceList = await db.LoadAllData();
-
-        returnlistTopic(FinanceList, dataFromGsheet);
-        //แจ้งเตือน Comsumer
-        notifyListeners();
-      }
+    UniqueIdGenerator() async {
+      Random random = await Random();
+      int randomNumber = await random.nextInt(10000000);
+      String getRandomString(int length) =>
+          String.fromCharCodes(Iterable.generate(
+              length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+      ID = await '${randomNumber}${getRandomString(10)}';
+      return ID;
     }
 
-    sumIncome(FinanceList);
-    sumExpense(FinanceList);
+    ID = await UniqueIdGenerator();
+    print("ID in saveDataToGoogleSheet : ${ID}");
 
-    //แจ้งเตือน Comsumer
+    Finance dataUpdate = Finance(
+        id: ID,
+        topic: data.topic,
+        date: data.date.toString(),
+        timestamp: data.timestamp.toString(),
+        name: data.name,
+        expense: data.expense,
+        income: data.income,
+        balance: data.balance,
+        note: data.note);
+
+    //insertFinance(dataUpdate);
+
+    //datafromGsheet = [];
+    //datafromGsheet.add(dataUpdate);
+    // print("datafromGsheet in saveDataToGoogleSheet :$datafromGsheet");
+    // print("datafromGsheet in saveDataToGoogleSheet :${datafromGsheet.length}");
+    returnlistTopic(datafromGsheet);
     notifyListeners();
   }
 
-  //1.5 จัดเรียงข้อมูลเพื่อคำนวนรายรับทั้งหมด
-  double sumIncome(List<FinanceVariable> result) {
-    List<FinanceVariable> incomedata = [];
-    for (var element in result) {
-      var type = element.type;
+  // void updateDataToGoogleSheet(Finance data) async {
+  //   UpdateDataIntoGSheet(data);
+  //   datafromGsheet = [];
+  //   datafromGsheet = await readDatafromGSheet();
+  //   returnlistTopic(datafromGsheet);
+  //   notifyListeners();
+  //   print(updateDataToGoogleSheet);
+  // }
 
-      if (type == "รายรับ") {
-        //print("รายรับ : ${element.name}");
+  //1.5 ลบข้อมูลในบัญชีรายอัน
+  // void delateDataFromGsheet(Finance data) async {
+  //   //เรียก database
+  //   datafromGsheet = [];
+  //   readDatafromGSheet();
+
+  //   //int? index = data.id;
+
+  //   for (var e in datafromGsheet) {
+  //     if (data.id == e.id)
+  //       //ลบข้อมูล
+  //       deleteDatafromGSheet(e.id!);
+
+  //     //ดึงข้อมูลมาแสดง
+  //     datafromGsheet = [];
+  //     readDatafromGSheet();
+
+  //     //returnlistTopic(FinanceList);
+  //     //แจ้งเตือน Comsumer
+  //     notifyListeners();
+  //   }
+  //   sumIncome(datafromGsheet);
+  //   sumExpense(datafromGsheet);
+
+  //   //แจ้งเตือน Comsumer
+  //   notifyListeners();
+  // }
+
+  //1.6 จัดเรียงข้อมูลเพื่อคำนวนรายรับทั้งหมด
+  double sumIncome(List<Finance> result) {
+    List<Finance> incomedata = [];
+    for (var element in result) {
+      if (element.income != 0.0) {
         incomedata.add(element);
-      } else if (type == "Nodata") {
+      } else if (element.income == 0.0 && element.expense == 0.0) {
         incomedata.add(element);
       }
     }
@@ -286,7 +322,7 @@ class FinanceProvider with ChangeNotifier {
       incomemoney = [0.0];
     } else {
       for (var money in incomedata) {
-        incomemoney.add(double.parse(money.amount.toString()));
+        incomemoney.add(double.parse(money.income.toString()));
       }
     }
 
@@ -297,15 +333,13 @@ class FinanceProvider with ChangeNotifier {
     return sumincomemoney;
   }
 
-  double sumExpense(List<FinanceVariable> result) {
-    List<FinanceVariable> expensesdata = [];
-    for (var element in result) {
-      var type = element.type;
+  double sumExpense(List<Finance> result) {
+    List<Finance> expensesdata = [];
 
-      if (type == "รายจ่าย") {
-        //print("รายจ่าย  : ${element.name}");
+    for (var element in result) {
+      if (element.expense != 0.0) {
         expensesdata.add(element);
-      } else if (type == "Nodata") {
+      } else if (element.expense == 0.0 && element.expense == 0.0) {
         expensesdata.add(element);
       }
     }
@@ -315,7 +349,7 @@ class FinanceProvider with ChangeNotifier {
       expensesmoney = [0.0];
     } else {
       for (var money in expensesdata) {
-        expensesmoney.add(double.parse(money.amount.toString()));
+        expensesmoney.add(double.parse(money.expense.toString()));
       }
     }
     double sumexpensesmoney =
@@ -323,4 +357,61 @@ class FinanceProvider with ChangeNotifier {
 
     return sumexpensesmoney;
   }
+
+  //1.7 บันทึกข้อมูลในระบบ local ลงที่ Google sheet
+  void saveDataFromLocalToGoogleSheet() async {
+    var _chars = "aSfac205EadlF506614Avdkgsl";
+
+    Random _rnd = Random();
+    String? ID;
+
+    UniqueIdGenerator() async {
+      Random random = await Random();
+      int randomNumber = await random.nextInt(10000000);
+      String getRandomString(int length) =>
+          String.fromCharCodes(Iterable.generate(
+              length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+      ID = await '${randomNumber}${getRandomString(10)}';
+      return ID;
+    }
+
+    ID = await UniqueIdGenerator();
+    print("ID : $ID");
+    if (FinanceList.isNotEmpty) {
+      for (var r in FinanceList) {
+        if (FinanceList.isNotEmpty) {
+          // insertFinance(Finance(
+          //     id: ID,
+          //     topic: r.topic,
+          //     date: r.datetime.toString(),
+          //     timestamp: r.timeStamp.toString(),
+          //     name: r.name,
+          //     expense: r.amount.toString(),
+          //     income: r.amount.toString(),
+          //     balance: r.amount.toString(),
+          //     note: r.note));
+        }
+      }
+    }
+    print("saveDataFromLocalToGoogleSheet");
+  }
+}
+
+void randomID(Finance data) async {
+  var _chars = "aSfac205EadlF506614Avdkgsl";
+  Random _rnd = Random();
+  String? ID;
+
+  UniqueIdGenerator() async {
+    Random random = await Random();
+    int randomNumber = await random.nextInt(10000000);
+    String getRandomString(int length) =>
+        String.fromCharCodes(Iterable.generate(
+            length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+    ID = await '${randomNumber}${getRandomString(10)}';
+    return ID;
+  }
+
+  ID = await UniqueIdGenerator();
+  print("ID in saveDataToGoogleSheet : ${ID}");
 }
