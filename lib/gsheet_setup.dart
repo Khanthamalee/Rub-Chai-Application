@@ -1,20 +1,15 @@
 import 'package:gsheets/gsheets.dart';
 
 import 'database/finace_field.dart';
+import 'database/financedata.dart';
 
 class UserSheetApi {
   static final _sheetid = "";
   static final _credentials = r'''{
-"
   }''';
 
-//by https://www.youtube.com/watch?v=3UJ6RnWTGIY
-
-//
   static final _gsheets = GSheets(_credentials);
-
   static Worksheet? _userSheet;
-
   static Future GSheetsinit() async {
     try {
       final spreadsheet = await _gsheets.spreadsheet(_sheetid);
@@ -35,7 +30,21 @@ class UserSheetApi {
     }
   }
 
-  static Future insert(List<Map<String, dynamic>> rowList) {
-    _userSheet!.values.map.appendRow(rowList);
+  static Future insert(List<Map<String, dynamic>> rowList) async {
+    _userSheet!.values.map.appendRows(rowList);
+  }
+
+  static Future<List<Finance>> getAll() async {
+    if (_userSheet == null) return <Finance>[];
+    final finance = await _userSheet!.values.map.allRows();
+    return finance == null
+        ? <Finance>[]
+        : finance.map(Finance.fromJson).toList();
+  }
+
+  static Future<Finance?> getByID(String id) async {
+    if (_userSheet == null) return null;
+    final json = await _userSheet!.values.map.rowByKey(id, fromColumn: 1);
+    return json == null ? null : Finance.fromJson(json);
   }
 }

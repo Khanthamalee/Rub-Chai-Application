@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:incomeandexpansesapp/DMstatic.dart';
 import 'package:incomeandexpansesapp/colors.dart';
+import 'package:incomeandexpansesapp/database/financedata.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class PieChart extends StatefulWidget {
-  List result;
+  List<Finance>? financeInTopic;
   int index_color;
-  PieChart({super.key, required this.result, required this.index_color});
+  PieChart(
+      {super.key, required this.financeInTopic, required this.index_color});
 
   @override
   State<PieChart> createState() => _PieChartState();
@@ -15,6 +18,7 @@ class PieChart extends StatefulWidget {
 class _PieChartState extends State<PieChart> {
   late List<PiedataChart> dataPieChart;
   late TooltipBehavior _tooltip;
+  List<Finance>? _financeInTopic;
 
   void sum() {}
 
@@ -23,6 +27,7 @@ class _PieChartState extends State<PieChart> {
     dataPieChart = [];
     _tooltip = TooltipBehavior(enable: true);
     super.initState();
+    _financeInTopic = widget.financeInTopic;
   }
 
   void DateTimeSort(
@@ -31,7 +36,7 @@ class _PieChartState extends State<PieChart> {
     List<DateTime> Timesort,
   ) {
     //Graph = [];
-    Timesort.sort();
+    Timesort.reversed;
     for (var t in Timesort) {
       for (var g in Graph) {
         if (g.datetime == t) {
@@ -46,10 +51,10 @@ class _PieChartState extends State<PieChart> {
   Widget build(BuildContext context) {
     double Hscreen = MediaQuery.of(context).size.height;
     List<DateTime> timesort = [];
-    List _result = widget.result;
+    List<Finance> _financeInTopic = widget.financeInTopic!;
     int _index_color = widget.index_color;
     print("เข้ามาหน้า กราฟ โหลด Graph ");
-    print("_result :$_result ");
+    print("_financeInTopic :$_financeInTopic ");
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -63,18 +68,21 @@ class _PieChartState extends State<PieChart> {
         double sumexpensestochart = 0.0;
         if (_index_color == 0) {
           dataPieChart = [];
-          for (var data in _result) {
-            var datetimeInDB =
-                "${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}-${data.datetime.day.toString().padLeft(2, "0")}";
+          for (var data in _financeInTopic) {
+            var datetimeInDB = "${data.date.toString().substring(0, 10)}";
+            //"${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}-${data.datetime.day.toString().padLeft(2, "0")}";
             var datetimeDay =
                 "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, "0")}-${DateTime.now().day.toString().padLeft(2, "0")}";
             if (datetimeInDB == datetimeDay) {
-              DateTime time = data.datetime;
-              timesort.add(data.datetime);
-              if (data.type == "รายรับ") {
-                sumIncometochart = sumIncometochart + data.amount;
-              } else if (data.type == "รายจ่าย") {
-                sumexpensestochart = sumexpensestochart - data.amount;
+              DateTime time =
+                  DateFormat("yyyy-MM-dd HH:mm:ss").parse(data.date.toString());
+              timesort.add(time);
+              if (data.income != "0") {
+                sumIncometochart =
+                    sumIncometochart + double.parse(data.income.toString());
+              } else if (data.income == "0") {
+                sumexpensestochart =
+                    sumexpensestochart - double.parse(data.expense.toString());
               }
             }
           }
@@ -85,7 +93,7 @@ class _PieChartState extends State<PieChart> {
           ];
         } else if (_index_color == 1) {
           dataPieChart = [];
-          for (var data in _result) {
+          for (var data in _financeInTopic) {
             List dayinweek = [];
             for (var i = 0; i <= 6; i++) {
               var dodayEnd = int.parse(DateTime.now().day.toString()) - i;
@@ -94,23 +102,28 @@ class _PieChartState extends State<PieChart> {
               dayinweek.add(day);
             }
 
-            var datetimeInDB =
-                "${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}-${data.datetime.day.toString().padLeft(2, "0")}";
+            var datetimeInDB = "${data.date.toString().substring(0, 10)}";
+
+            //"${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}-${data.datetime.day.toString().padLeft(2, "0")}";
             for (var day in dayinweek) {
               var dayweekstring =
                   "${day.year}-${day.month.toString().padLeft(2, "0")}-${day.day.toString().padLeft(2, "0")}";
+
               if (datetimeInDB == dayweekstring) {
                 //print("day in var day in dayinweek: $day");
-                DateTime time = data.datetime;
-                print("time in var day in dayinweek: $time");
-                timesort.add(data.datetime);
-                print("timesort in var day in dayinweek: $timesort");
-                if (data.type == "รายรับ") {
-                  sumIncometochart = sumIncometochart + data.amount;
-                  print("sumIncometochart in รายรับ : $sumIncometochart");
-                } else if (data.type == "รายจ่าย") {
-                  sumexpensestochart = sumexpensestochart - data.amount;
-                  print("sumexpensestochart in รายจ่าย : $sumexpensestochart");
+                DateTime time = DateFormat("yyyy-MM-dd HH:mm:ss")
+                    .parse(data.date.toString());
+                //print("time in var day in dayinweek: $time");
+                timesort.add(time);
+                //print("timesort in var day in dayinweek: $timesort");
+                if (data.income != "0") {
+                  sumIncometochart =
+                      sumIncometochart + double.parse(data.income.toString());
+                  //print("sumIncometochart in รายรับ : $sumIncometochart");
+                } else if (data.income == "0") {
+                  sumexpensestochart = sumexpensestochart -
+                      double.parse(data.expense.toString());
+                  //print("sumexpensestochart in รายจ่าย : $sumexpensestochart");
                 }
               }
             }
@@ -121,18 +134,27 @@ class _PieChartState extends State<PieChart> {
           ];
         } else if (_index_color == 2) {
           dataPieChart = [];
-          for (var data in _result) {
-            var datetimeInDB =
-                "${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}";
+          //print("month");
+
+          for (var data in _financeInTopic) {
+            var datetimeInDB = "${data.date.toString().substring(0, 7)}";
+            //"${data.datetime.year}-${data.datetime.month.toString().padLeft(2, "0")}";
             var datetimeMonth =
                 "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, "0")}";
+            // print(datetimeMonth);
+            // print(datetimeInDB);
             if (datetimeInDB == datetimeMonth) {
-              DateTime time = data.datetime;
-              timesort.add(data.datetime);
-              if (data.type == "รายรับ") {
-                sumIncometochart = sumIncometochart + data.amount;
-              } else if (data.type == "รายจ่าย") {
-                sumexpensestochart = sumexpensestochart - data.amount;
+              DateTime time =
+                  DateFormat("yyyy-MM-dd HH:mm:ss").parse(data.date.toString());
+              timesort.add(time);
+              if (data.income != "0") {
+                sumIncometochart =
+                    sumIncometochart + double.parse(data.income.toString());
+               // print("sumIncometochart in รายรับ : $sumIncometochart");
+              } else if (data.income == "0") {
+                sumexpensestochart =
+                    sumexpensestochart - double.parse(data.expense.toString());
+               // print("sumexpensestochart in รายจ่าย : $sumexpensestochart");
               }
             }
           }
@@ -142,16 +164,21 @@ class _PieChartState extends State<PieChart> {
           ];
         } else if (_index_color == 3) {
           dataPieChart = [];
-          for (var data in _result) {
-            var datetimeInDB = "${data.datetime.year}";
+          for (var data in _financeInTopic) {
+            var datetimeInDB = "${data.date.toString().substring(0, 4)}";
             var datetimeMonth = "${DateTime.now().year}";
             if (datetimeInDB == datetimeMonth) {
-              DateTime time = data.datetime;
+              DateTime time =
+                  DateFormat("yyyy-MM-dd HH:mm:ss").parse(data.date.toString());
               timesort.add(time);
-              if (data.type == "รายรับ") {
-                sumIncometochart = sumIncometochart + data.amount;
-              } else if (data.type == "รายจ่าย") {
-                sumexpensestochart = sumexpensestochart - data.amount;
+              if (data.income != "0") {
+                sumIncometochart =
+                    sumIncometochart + double.parse(data.income.toString());
+               // print("sumIncometochart in รายรับ : $sumIncometochart");
+              } else if (data.income == "0") {
+                sumexpensestochart =
+                    sumexpensestochart - double.parse(data.expense.toString());
+               // print("sumexpensestochart in รายจ่าย : $sumexpensestochart");
               }
             }
           }

@@ -7,6 +7,7 @@ import 'package:incomeandexpansesapp/page/Provider/financeProvider.dart';
 import 'package:incomeandexpansesapp/page/addtopicpage.dart';
 import 'package:provider/provider.dart';
 
+import '../../database/financedata.dart';
 import '../../gsheet_CRUD.dart';
 
 class UpdateTopic extends StatefulWidget {
@@ -49,7 +50,7 @@ class _UpdateTopicState extends State<UpdateTopic> {
           listdata.add(data);
         }
       }
-      print(provider.getdatafromGsheet());
+
       print("listdata $listdata");
 
       return Center(
@@ -196,10 +197,10 @@ class _UpdateTopicState extends State<UpdateTopic> {
                                     listen: false);
 
                             for (var d in listdata) {
-                              print("i : ${d.id}");
+                              // print("i : ${d.id}");
                               // if (i == provider.FinanceList)
                               //เตรียม Json ลง provider
-                              finance data = finance(
+                              Finance data = Finance(
                                 id: d.id,
                                 topic: topicController.text,
                                 date: d.date,
@@ -211,10 +212,10 @@ class _UpdateTopicState extends State<UpdateTopic> {
                                 note: d.note,
                               );
 
-                              print(
-                                  "id = ${d.id} , topic = ${topicController.text}");
+                              // print(
+                              //     "id = ${d.id} , topic = ${topicController.text}");
 
-                              provider.UpdateTopic(d.id, data);
+                              //provider.UpdateTopic(d.id, data);
 
                               provider.setTopic.add(topicController.text);
                               provider.setTopic.remove(d.topic);

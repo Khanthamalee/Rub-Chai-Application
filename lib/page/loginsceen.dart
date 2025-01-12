@@ -6,7 +6,6 @@ import 'package:incomeandexpansesapp/DMstatic.dart';
 import 'package:incomeandexpansesapp/colors.dart';
 import 'package:incomeandexpansesapp/font.dart';
 import 'package:incomeandexpansesapp/page/addtopicpage.dart';
-import 'package:incomeandexpansesapp/page/homepagescreen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});

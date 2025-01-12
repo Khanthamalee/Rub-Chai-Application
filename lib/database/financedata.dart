@@ -1,15 +1,15 @@
-class finance {
+class Finance {
   String? id;
   String? topic;
   String? date;
   String? timestamp;
   String? name;
-  double? income;
-  double? expense;
-  double? balance;
+  String? income;
+  String? expense;
+  String? balance;
   String? note;
 
-  finance(
+  Finance(
       {this.id,
       this.topic,
       this.date,
@@ -20,9 +20,7 @@ class finance {
       this.balance,
       this.note});
 
-  
-
-  finance.fromJson(Map<String, dynamic> json) {
+  Finance.fromJson(Map<String, dynamic> json) {
     id = json['Id'];
     topic = json['Topic'];
     date = json['Date'];

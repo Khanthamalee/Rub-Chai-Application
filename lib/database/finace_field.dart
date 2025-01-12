@@ -2,7 +2,7 @@ class financeField {
   static final id = "Id";
   static final topic = "Topic";
   static final date = "Date";
-  static final timestamp = "Timpstamp";
+  static final timestamp = "Timestamp";
   static final name = "Name";
   static final income = "Income";
   static final expense = "Expense";
