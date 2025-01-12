@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:incomeandexpansesapp/DMstatic.dart';
 import 'package:incomeandexpansesapp/colors.dart';
 import 'package:incomeandexpansesapp/font.dart';
+import 'package:incomeandexpansesapp/gsheet_setup.dart';
 import 'package:incomeandexpansesapp/page/Provider/financeProvider.dart';
 import 'package:incomeandexpansesapp/page/addtopicpage.dart';
 import 'package:provider/provider.dart';
@@ -22,14 +23,41 @@ class _UpdateTopicState extends State<UpdateTopic> {
   @override
   final formKey = GlobalKey<FormState>();
   TextEditingController topicController = TextEditingController();
+  List<Finance> finances = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    getFinance();
     //เรียก initdata ที่ FinanceProvider
     //Provider.of<FinanceProvider>(context, listen: false).initData();
+  }
+
+  //ReadData
+  Future getFinance() async {
+    final allfinances = await UserSheetApi.getAll();
+    arrange(allfinances);
+    Provider.of<FinanceProvider>(context, listen: false)
+        .returnlistTopic(finances);
+    //print("finances in initState : ${finances.length}");
+
+    setState(() {
+      this.finances = finances;
+    });
+  }
+
+  Future updateFinance(String id, Map<String, dynamic> list) async {
+    await UserSheetApi.updateByID(id, list);
+    await getFinance();
+  }
+
+  List<Finance> arrange(List<Finance> financeInTopic) {
+    for (var data in financeInTopic) {
+      finances.insert(0, data);
+    }
+    //print("finances : ${finances[0].date}");
+    return finances;
   }
 
   bool enabledbuttontopic = false;
@@ -42,16 +70,18 @@ class _UpdateTopicState extends State<UpdateTopic> {
         builder: (BuildContext context, FinanceProvider provider, widget) {
       provider.getdatafromGsheet();
       List<String> idchangetopic = [];
-      List<dynamic> listdata = [];
-      for (var data in provider.datafromGsheet) {
+      List<Finance> listdata = [];
+      for (var data in finances) {
+        //print(data.topic);
         if (data.topic == _topic) {
           var idchange = data.id;
           idchangetopic.add(idchange!);
           listdata.add(data);
+          //print("data.timestamp ${data.timestamp}");
         }
       }
 
-      print("listdata $listdata");
+      //print("listdata $listdata");
 
       return Center(
         child: AlertDialog(
@@ -172,7 +202,7 @@ class _UpdateTopicState extends State<UpdateTopic> {
                         await Future.delayed(Duration(milliseconds: 200));
                         setState(() => enabledbuttontopic = false);
                         await Future.delayed(Duration(milliseconds: 200));
-                        setState(() {
+                        setState(() async {
                           if (formKey.currentState!.validate() &&
                               provider.setTopic
                                       .contains(topicController.text) ==
@@ -197,38 +227,32 @@ class _UpdateTopicState extends State<UpdateTopic> {
                                     listen: false);
 
                             for (var d in listdata) {
-                              // print("i : ${d.id}");
+                              //print("i : ${d.timestamp}");
                               // if (i == provider.FinanceList)
                               //เตรียม Json ลง provider
-                              Finance data = Finance(
+                              Finance finance = Finance(
                                 id: d.id,
                                 topic: topicController.text,
                                 date: d.date,
-                                timestamp: d.timestamp,
+                                timestamp: d.timestamp.toString(),
                                 name: d.name,
                                 income: d.income,
                                 expense: d.expense,
                                 balance: d.balance,
                                 note: d.note,
                               );
-
-                              // print(
-                              //     "id = ${d.id} , topic = ${topicController.text}");
-
-                              //provider.UpdateTopic(d.id, data);
-
-                              provider.setTopic.add(topicController.text);
-                              provider.setTopic.remove(d.topic);
-                              print("provider.setTopic ${provider.setTopic}");
+                              //print(d.id);
+                              //print(finance.toJson());
+                              await updateFinance(
+                                  d.id.toString(), finance.toJson());
                             }
-
+                            print("data updated");
+                            print("provider.setTopic ${provider.setTopic}");
                             Navigator.pop(context);
-
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => AddTopicPage()));
-                            setState(() {});
                           }
                         });
                       },

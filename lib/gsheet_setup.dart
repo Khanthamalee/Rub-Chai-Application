@@ -6,7 +6,7 @@ import 'database/financedata.dart';
 class UserSheetApi {
   static final _sheetid = "";
   static final _credentials = r'''{
-  }''';
+}''';
 
   static final _gsheets = GSheets(_credentials);
   static Worksheet? _userSheet;
@@ -46,5 +46,17 @@ class UserSheetApi {
     if (_userSheet == null) return null;
     final json = await _userSheet!.values.map.rowByKey(id, fromColumn: 1);
     return json == null ? null : Finance.fromJson(json);
+  }
+
+  static Future<bool> updateByID(String id, Map<String, dynamic> list) async {
+    if (_userSheet == null) return false;
+    return _userSheet!.values.map.insertRowByKey(id, list);
+  }
+
+  static Future<bool> deleteByID(String id) async {
+    if (_userSheet == null) return false;
+    final index = await _userSheet!.values.rowIndexOf(id);
+    if (index == -1) return false;
+    return _userSheet!.deleteRow(index);
   }
 }
